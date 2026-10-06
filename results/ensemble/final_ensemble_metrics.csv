@@ -1,0 +1,2 @@
+accuracy,weighted_precision,weighted_recall,weighted_f1,macro_f1,rf_weight,xgb_weight,two_stream_weight
+0.5253121508040616,0.7973858854797509,0.5253121508040616,0.5868405207060648,0.33622047966300417,0.15,0.1,0.75

@@ -1,0 +1,70 @@
+{
+    "sample_index": 262,
+    "actual_class": "Exploits",
+    "predicted_class": "Exploits",
+    "confidence": 0.27079375802202255,
+    "features": {
+        "inter_arrival_time": -0.1389322131872177,
+        "protocol_distribution": 0.062138769775629044,
+        "packet_rate": -0.5757244229316711,
+        "flow_duration": 0.970048189163208,
+        "packet_size": 4.650475978851318,
+        "query_type_distribution": -0.6077567338943481,
+        "dns_query_frequency": -0.13912995159626007,
+        "query_rate": -0.3852342963218689,
+        "dns_response_activity": -0.03422252833843231,
+        "query_length": -0.44845902919769287
+    },
+    "lime_explanation": [
+        {
+            "feature": "packet_size > -0.32",
+            "weight": 0.10106504199970245,
+            "effect": "supports_prediction"
+        },
+        {
+            "feature": "dns_response_activity <= -0.03",
+            "weight": -0.07374801464944178,
+            "effect": "opposes_prediction"
+        },
+        {
+            "feature": "query_type_distribution <= -0.61",
+            "weight": -0.06395149252850926,
+            "effect": "opposes_prediction"
+        },
+        {
+            "feature": "dns_query_frequency <= -0.14",
+            "weight": -0.03141580178853695,
+            "effect": "opposes_prediction"
+        },
+        {
+            "feature": "query_length <= -0.39",
+            "weight": 0.02465750332664842,
+            "effect": "supports_prediction"
+        },
+        {
+            "feature": "protocol_distribution <= 0.15",
+            "weight": 0.012490100193555922,
+            "effect": "supports_prediction"
+        },
+        {
+            "feature": "-0.58 < packet_rate <= -0.54",
+            "weight": -0.011431435574627996,
+            "effect": "opposes_prediction"
+        },
+        {
+            "feature": "flow_duration > -0.10",
+            "weight": -0.001960137828979769,
+            "effect": "opposes_prediction"
+        },
+        {
+            "feature": "query_rate <= -0.39",
+            "weight": -0.0003399002489889512,
+            "effect": "opposes_prediction"
+        },
+        {
+            "feature": "-0.14 < inter_arrival_time <= -0.13",
+            "weight": -0.0003094770741499577,
+            "effect": "opposes_prediction"
+        }
+    ]
+}

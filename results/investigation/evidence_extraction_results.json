@@ -1,0 +1,1137 @@
+[
+    {
+        "sample": {
+            "sample_index": 0,
+            "network_features": [
+                -0.1448671817779541,
+                0.33090075850486755,
+                -0.027039755135774612,
+                -0.21009866893291473,
+                0.34739333391189575
+            ],
+            "dns_features": [
+                -0.6077567338943481,
+                -0.13912995159626007,
+                -0.3852342963218689,
+                -0.03422252833843231,
+                0.5436543822288513
+            ]
+        },
+        "binary_detection": {
+            "prediction": "Attack",
+            "attack_probability": 0.7393220663070679,
+            "normal_probability": 0.26067793369293213,
+            "threshold": 0.34
+        },
+        "attack_classification": {
+            "random_forest": {
+                "predicted_class": "Normal",
+                "confidence": 0.1716707672694551,
+                "top_predictions": [
+                    {
+                        "class": "Normal",
+                        "probability": 0.1716707672694551
+                    },
+                    {
+                        "class": "DoS",
+                        "probability": 0.17098066746010748
+                    },
+                    {
+                        "class": "Exploits",
+                        "probability": 0.16778968592593302
+                    }
+                ]
+            },
+            "two_stream": {
+                "binary_prediction": "Attack",
+                "binary_probability": 0.7393220663070679,
+                "binary_threshold": 0.34,
+                "multiclass_prediction": "Shellcode",
+                "multiclass_confidence": 0.8003091812133789,
+                "top_predictions": [
+                    {
+                        "class": "Shellcode",
+                        "probability": 0.8003091812133789
+                    },
+                    {
+                        "class": "DoS",
+                        "probability": 0.06483669579029083
+                    },
+                    {
+                        "class": "Fuzzers",
+                        "probability": 0.06276047229766846
+                    }
+                ]
+            }
+        },
+        "anomaly_detection": {
+            "is_anomaly": false,
+            "anomaly_score": 0.03664111337986592,
+            "interpretation": "Within learned normal traffic distribution"
+        },
+        "explainability": {
+            "local_shap": {
+                "predicted_class": "Normal",
+                "confidence": 0.1716707672694551,
+                "top_features": [
+                    {
+                        "feature": "query_length",
+                        "feature_value": 0.5436543822288513,
+                        "contribution": -0.025225648050484387,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "packet_size",
+                        "feature_value": 0.34739333391189575,
+                        "contribution": 0.022374085405560937,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "protocol_distribution",
+                        "feature_value": 0.33090075850486755,
+                        "contribution": 0.02138686277086983,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "packet_rate",
+                        "feature_value": -0.027039755135774612,
+                        "contribution": 0.020194905757117836,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "flow_duration",
+                        "feature_value": -0.21009866893291473,
+                        "contribution": 0.01760475990943501,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "inter_arrival_time",
+                        "feature_value": -0.1448671817779541,
+                        "contribution": 0.007254961178247466,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_type_distribution",
+                        "feature_value": -0.6077567338943481,
+                        "contribution": 0.003440499560942807,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "dns_query_frequency",
+                        "feature_value": -0.13912995159626007,
+                        "contribution": 0.0028302955639256957,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "dns_response_activity",
+                        "feature_value": -0.03422252833843231,
+                        "contribution": 0.0018138896376719896,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_rate",
+                        "feature_value": -0.3852342963218689,
+                        "contribution": 2.656625045322977e-05,
+                        "direction": "supports_prediction"
+                    }
+                ]
+            },
+            "global_shap": {
+                "available": false,
+                "message": "Could not process global SHAP: 'mean_abs_shap'"
+            },
+            "lime": {
+                "predicted_class": "Normal",
+                "confidence": 0.17167076726945513,
+                "top_features": [
+                    {
+                        "feature": "packet_size",
+                        "feature_value": 0.34739333391189575,
+                        "contribution": -0.10572345435417348,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "packet_rate",
+                        "feature_value": -0.027039755135774612,
+                        "contribution": 0.0913721417208013,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_type_distribution",
+                        "feature_value": -0.6077567338943481,
+                        "contribution": 0.04652265401032219,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_length",
+                        "feature_value": 0.5436543822288513,
+                        "contribution": -0.024135011151535747,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "dns_response_activity",
+                        "feature_value": -0.03422252833843231,
+                        "contribution": 0.023675879699352833,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "dns_query_frequency",
+                        "feature_value": -0.13912995159626007,
+                        "contribution": 0.023539104428303884,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "protocol_distribution",
+                        "feature_value": 0.33090075850486755,
+                        "contribution": 0.01900095354486132,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "flow_duration",
+                        "feature_value": -0.21009866893291473,
+                        "contribution": -0.012984632256508937,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "inter_arrival_time",
+                        "feature_value": -0.1448671817779541,
+                        "contribution": -0.0030228522383703034,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "query_rate",
+                        "feature_value": -0.3852342963218689,
+                        "contribution": -0.0013316410604901701,
+                        "direction": "opposes_prediction"
+                    }
+                ]
+            }
+        },
+        "model_consistency": {
+            "random_forest_class": "Normal",
+            "two_stream_class": "Shellcode",
+            "model_disagreement": true,
+            "agreement_status": "Disagreement"
+        },
+        "evidence_strength": {
+            "score": 50,
+            "level": "Low"
+        },
+        "analyst_summary": [
+            "The binary detector identified the traffic as an attack.",
+            "Random Forest predicted Normal with 17.17% confidence.",
+            "Two-Stream predicted Shellcode with 80.03% confidence.",
+            "Isolation Forest did not flag the sample as anomalous.",
+            "The supervised classifiers disagree on the specific attack class.",
+            "Overall evidence strength is Low (50/100)."
+        ]
+    },
+    {
+        "sample": {
+            "sample_index": 100,
+            "network_features": [
+                0.08236245810985565,
+                0.062138769775629044,
+                -0.5769060254096985,
+                2.1260175704956055,
+                -0.5960098505020142
+            ],
+            "dns_features": [
+                -0.6077567338943481,
+                -0.13912995159626007,
+                -0.3852342963218689,
+                -0.03422252833843231,
+                -0.44826552271842957
+            ]
+        },
+        "binary_detection": {
+            "prediction": "Attack",
+            "attack_probability": 0.5066615343093872,
+            "normal_probability": 0.4933384656906128,
+            "threshold": 0.34
+        },
+        "attack_classification": {
+            "random_forest": {
+                "predicted_class": "Generic",
+                "confidence": 0.27376778776778776,
+                "top_predictions": [
+                    {
+                        "class": "Generic",
+                        "probability": 0.27376778776778776
+                    },
+                    {
+                        "class": "Normal",
+                        "probability": 0.2527155067155067
+                    },
+                    {
+                        "class": "Worms",
+                        "probability": 0.11
+                    }
+                ]
+            },
+            "two_stream": {
+                "binary_prediction": "Attack",
+                "binary_probability": 0.5066615343093872,
+                "binary_threshold": 0.34,
+                "multiclass_prediction": "Fuzzers",
+                "multiclass_confidence": 0.3799581527709961,
+                "top_predictions": [
+                    {
+                        "class": "Fuzzers",
+                        "probability": 0.3799581527709961
+                    },
+                    {
+                        "class": "Normal",
+                        "probability": 0.15190982818603516
+                    },
+                    {
+                        "class": "Exploits",
+                        "probability": 0.150282621383667
+                    }
+                ]
+            }
+        },
+        "anomaly_detection": {
+            "is_anomaly": false,
+            "anomaly_score": 0.06696332341694283,
+            "interpretation": "Within learned normal traffic distribution"
+        },
+        "explainability": {
+            "local_shap": {
+                "predicted_class": "Generic",
+                "confidence": 0.27376778776778776,
+                "top_features": [
+                    {
+                        "feature": "packet_size",
+                        "feature_value": -0.5960098505020142,
+                        "contribution": 0.10006744351997289,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_length",
+                        "feature_value": -0.44826552271842957,
+                        "contribution": 0.07333253728295021,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "protocol_distribution",
+                        "feature_value": 0.062138769775629044,
+                        "contribution": -0.04512156244453273,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "packet_rate",
+                        "feature_value": -0.5769060254096985,
+                        "contribution": 0.036221265474616605,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "flow_duration",
+                        "feature_value": 2.1260175704956055,
+                        "contribution": -0.013457498201403236,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "query_type_distribution",
+                        "feature_value": -0.6077567338943481,
+                        "contribution": 0.010990109116795467,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "dns_query_frequency",
+                        "feature_value": -0.13912995159626007,
+                        "contribution": 0.009985547284036488,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "dns_response_activity",
+                        "feature_value": -0.03422252833843231,
+                        "contribution": 0.009139208601368054,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "inter_arrival_time",
+                        "feature_value": 0.08236245810985565,
+                        "contribution": -0.0074958510449887284,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "query_rate",
+                        "feature_value": -0.3852342963218689,
+                        "contribution": 0.0001287488932684529,
+                        "direction": "supports_prediction"
+                    }
+                ]
+            },
+            "global_shap": {
+                "available": false,
+                "message": "Could not process global SHAP: 'mean_abs_shap'"
+            },
+            "lime": {
+                "predicted_class": "Generic",
+                "confidence": 0.27376778776778776,
+                "top_features": [
+                    {
+                        "feature": "query_type_distribution",
+                        "feature_value": -0.6077567338943481,
+                        "contribution": 0.07021404792539461,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "dns_response_activity",
+                        "feature_value": -0.03422252833843231,
+                        "contribution": 0.06221712268846231,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "packet_size",
+                        "feature_value": -0.5960098505020142,
+                        "contribution": 0.05444882029204776,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "protocol_distribution",
+                        "feature_value": 0.062138769775629044,
+                        "contribution": 0.042319709225654624,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "dns_query_frequency",
+                        "feature_value": -0.13912995159626007,
+                        "contribution": 0.041932468894948435,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "inter_arrival_time",
+                        "feature_value": 0.08236245810985565,
+                        "contribution": 0.02363788178263686,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "packet_rate",
+                        "feature_value": -0.5769060254096985,
+                        "contribution": -0.010156912030098941,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "query_length",
+                        "feature_value": -0.44826552271842957,
+                        "contribution": -0.006994905759995361,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "flow_duration",
+                        "feature_value": 2.1260175704956055,
+                        "contribution": 0.005305362009608153,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_rate",
+                        "feature_value": -0.3852342963218689,
+                        "contribution": -0.003985600782566943,
+                        "direction": "opposes_prediction"
+                    }
+                ]
+            }
+        },
+        "model_consistency": {
+            "random_forest_class": "Generic",
+            "two_stream_class": "Fuzzers",
+            "model_disagreement": true,
+            "agreement_status": "Disagreement"
+        },
+        "evidence_strength": {
+            "score": 30,
+            "level": "Low"
+        },
+        "analyst_summary": [
+            "The binary detector identified the traffic as an attack.",
+            "Random Forest predicted Generic with 27.38% confidence.",
+            "Two-Stream predicted Fuzzers with 38.00% confidence.",
+            "Isolation Forest did not flag the sample as anomalous.",
+            "The supervised classifiers disagree on the specific attack class.",
+            "Overall evidence strength is Low (30/100)."
+        ]
+    },
+    {
+        "sample": {
+            "sample_index": 1000,
+            "network_features": [
+                -0.13275399804115295,
+                0.062138769775629044,
+                -0.5766318440437317,
+                -0.14610601961612701,
+                0.6113603711128235
+            ],
+            "dns_features": [
+                -0.6077567338943481,
+                -0.13912995159626007,
+                -0.3852342963218689,
+                -0.03422252833843231,
+                0.013978929258883
+            ]
+        },
+        "binary_detection": {
+            "prediction": "Attack",
+            "attack_probability": 0.46469196677207947,
+            "normal_probability": 0.5353080332279205,
+            "threshold": 0.34
+        },
+        "attack_classification": {
+            "random_forest": {
+                "predicted_class": "Exploits",
+                "confidence": 0.18017516420361246,
+                "top_predictions": [
+                    {
+                        "class": "Exploits",
+                        "probability": 0.18017516420361246
+                    },
+                    {
+                        "class": "Generic",
+                        "probability": 0.131557881773399
+                    },
+                    {
+                        "class": "DoS",
+                        "probability": 0.11738300492610837
+                    }
+                ]
+            },
+            "two_stream": {
+                "binary_prediction": "Attack",
+                "binary_probability": 0.46469196677207947,
+                "binary_threshold": 0.34,
+                "multiclass_prediction": "Exploits",
+                "multiclass_confidence": 0.45093148946762085,
+                "top_predictions": [
+                    {
+                        "class": "Exploits",
+                        "probability": 0.45093148946762085
+                    },
+                    {
+                        "class": "Normal",
+                        "probability": 0.2536707818508148
+                    },
+                    {
+                        "class": "DoS",
+                        "probability": 0.1761157512664795
+                    }
+                ]
+            }
+        },
+        "anomaly_detection": {
+            "is_anomaly": false,
+            "anomaly_score": 0.13750702815825822,
+            "interpretation": "Within learned normal traffic distribution"
+        },
+        "explainability": {
+            "local_shap": {
+                "predicted_class": "Exploits",
+                "confidence": 0.18017516420361246,
+                "top_features": [
+                    {
+                        "feature": "packet_size",
+                        "feature_value": 0.6113603711128235,
+                        "contribution": 0.058761808319165686,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "packet_rate",
+                        "feature_value": -0.5766318440437317,
+                        "contribution": -0.04002572777135304,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "query_length",
+                        "feature_value": 0.013978929258883,
+                        "contribution": 0.026987148958696975,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "inter_arrival_time",
+                        "feature_value": -0.13275399804115295,
+                        "contribution": 0.01961743966987087,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "protocol_distribution",
+                        "feature_value": 0.062138769775629044,
+                        "contribution": 0.01410962263312858,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "dns_response_activity",
+                        "feature_value": -0.03422252833843231,
+                        "contribution": 0.010340559962934991,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "dns_query_frequency",
+                        "feature_value": -0.13912995159626007,
+                        "contribution": -0.00730668669355589,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "flow_duration",
+                        "feature_value": -0.14610601961612701,
+                        "contribution": -0.0018617786994670653,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "query_type_distribution",
+                        "feature_value": -0.6077567338943481,
+                        "contribution": -0.0005027194111673099,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "query_rate",
+                        "feature_value": -0.3852342963218689,
+                        "contribution": 5.264009250264739e-05,
+                        "direction": "supports_prediction"
+                    }
+                ]
+            },
+            "global_shap": {
+                "available": false,
+                "message": "Could not process global SHAP: 'mean_abs_shap'"
+            },
+            "lime": {
+                "predicted_class": "Exploits",
+                "confidence": 0.18017516420361246,
+                "top_features": [
+                    {
+                        "feature": "packet_size",
+                        "feature_value": 0.6113603711128235,
+                        "contribution": 0.11148841950841158,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_type_distribution",
+                        "feature_value": -0.6077567338943481,
+                        "contribution": -0.06909037195987262,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "dns_query_frequency",
+                        "feature_value": -0.13912995159626007,
+                        "contribution": -0.06712207546559013,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "dns_response_activity",
+                        "feature_value": -0.03422252833843231,
+                        "contribution": -0.038974864096162395,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "packet_rate",
+                        "feature_value": -0.5766318440437317,
+                        "contribution": -0.02932817825831561,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "query_length",
+                        "feature_value": 0.013978929258883,
+                        "contribution": 0.01972880994302432,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "flow_duration",
+                        "feature_value": -0.14610601961612701,
+                        "contribution": -0.008241576728340838,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "query_rate",
+                        "feature_value": -0.3852342963218689,
+                        "contribution": 0.0059959902650369235,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "protocol_distribution",
+                        "feature_value": 0.062138769775629044,
+                        "contribution": 0.003927332836625722,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "inter_arrival_time",
+                        "feature_value": -0.13275399804115295,
+                        "contribution": -0.0034344552175082405,
+                        "direction": "opposes_prediction"
+                    }
+                ]
+            }
+        },
+        "model_consistency": {
+            "random_forest_class": "Exploits",
+            "two_stream_class": "Exploits",
+            "model_disagreement": false,
+            "agreement_status": "Agreement"
+        },
+        "evidence_strength": {
+            "score": 55,
+            "level": "Low"
+        },
+        "analyst_summary": [
+            "The binary detector identified the traffic as an attack.",
+            "Random Forest predicted Exploits with 18.02% confidence.",
+            "Two-Stream predicted Exploits with 45.09% confidence.",
+            "Isolation Forest did not flag the sample as anomalous.",
+            "The supervised classifiers agree on the predicted attack class.",
+            "Overall evidence strength is Low (55/100)."
+        ]
+    },
+    {
+        "sample": {
+            "sample_index": 5000,
+            "network_features": [
+                -0.14486758410930634,
+                0.3756944239139557,
+                0.1791614592075348,
+                -0.21009914577007294,
+                -0.34040799736976624
+            ],
+            "dns_features": [
+                -0.6077567338943481,
+                -0.13912995159626007,
+                -0.3852342963218689,
+                -0.03422252833843231,
+                -0.17951874434947968
+            ]
+        },
+        "binary_detection": {
+            "prediction": "Attack",
+            "attack_probability": 0.9851340055465698,
+            "normal_probability": 0.014865994453430176,
+            "threshold": 0.34
+        },
+        "attack_classification": {
+            "random_forest": {
+                "predicted_class": "Normal",
+                "confidence": 0.28008564707150546,
+                "top_predictions": [
+                    {
+                        "class": "Normal",
+                        "probability": 0.28008564707150546
+                    },
+                    {
+                        "class": "Generic",
+                        "probability": 0.18337181358871557
+                    },
+                    {
+                        "class": "Exploits",
+                        "probability": 0.13323591944610255
+                    }
+                ]
+            },
+            "two_stream": {
+                "binary_prediction": "Attack",
+                "binary_probability": 0.9851340055465698,
+                "binary_threshold": 0.34,
+                "multiclass_prediction": "Analysis",
+                "multiclass_confidence": 0.2600017189979553,
+                "top_predictions": [
+                    {
+                        "class": "Analysis",
+                        "probability": 0.2600017189979553
+                    },
+                    {
+                        "class": "Backdoor",
+                        "probability": 0.2460426688194275
+                    },
+                    {
+                        "class": "DoS",
+                        "probability": 0.24302832782268524
+                    }
+                ]
+            }
+        },
+        "anomaly_detection": {
+            "is_anomaly": false,
+            "anomaly_score": 0.08854171785704607,
+            "interpretation": "Within learned normal traffic distribution"
+        },
+        "explainability": {
+            "local_shap": {
+                "predicted_class": "Normal",
+                "confidence": 0.28008564707150546,
+                "top_features": [
+                    {
+                        "feature": "packet_size",
+                        "feature_value": -0.34040799736976624,
+                        "contribution": 0.12549247744221187,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "flow_duration",
+                        "feature_value": -0.21009914577007294,
+                        "contribution": -0.0303907801757342,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "inter_arrival_time",
+                        "feature_value": -0.14486758410930634,
+                        "contribution": 0.025758638104411063,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_length",
+                        "feature_value": -0.17951874434947968,
+                        "contribution": 0.01964287581832328,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "packet_rate",
+                        "feature_value": 0.1791614592075348,
+                        "contribution": 0.01427951412483167,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "protocol_distribution",
+                        "feature_value": 0.3756944239139557,
+                        "contribution": 0.01239813032107125,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "dns_query_frequency",
+                        "feature_value": -0.13912995159626007,
+                        "contribution": 0.0055578244132887195,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_type_distribution",
+                        "feature_value": -0.6077567338943481,
+                        "contribution": 0.004762275518838374,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "dns_response_activity",
+                        "feature_value": -0.03422252833843231,
+                        "contribution": 0.002576151960021382,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_rate",
+                        "feature_value": -0.3852342963218689,
+                        "contribution": 3.8950258529363924e-05,
+                        "direction": "supports_prediction"
+                    }
+                ]
+            },
+            "global_shap": {
+                "available": false,
+                "message": "Could not process global SHAP: 'mean_abs_shap'"
+            },
+            "lime": {
+                "predicted_class": "Normal",
+                "confidence": 0.28008564707150546,
+                "top_features": [
+                    {
+                        "feature": "packet_rate",
+                        "feature_value": 0.1791614592075348,
+                        "contribution": 0.09105873579933191,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_type_distribution",
+                        "feature_value": -0.6077567338943481,
+                        "contribution": 0.05233950018821063,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "packet_size",
+                        "feature_value": -0.34040799736976624,
+                        "contribution": 0.04974368286931309,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "dns_query_frequency",
+                        "feature_value": -0.13912995159626007,
+                        "contribution": 0.03621021071656676,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_length",
+                        "feature_value": -0.17951874434947968,
+                        "contribution": 0.029638539834379744,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "protocol_distribution",
+                        "feature_value": 0.3756944239139557,
+                        "contribution": 0.027349480809432468,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "flow_duration",
+                        "feature_value": -0.21009914577007294,
+                        "contribution": -0.020393960416610735,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "dns_response_activity",
+                        "feature_value": -0.03422252833843231,
+                        "contribution": 0.005927724334303614,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "inter_arrival_time",
+                        "feature_value": -0.14486758410930634,
+                        "contribution": 0.0031397336512438926,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_rate",
+                        "feature_value": -0.3852342963218689,
+                        "contribution": -0.0023124112122629528,
+                        "direction": "opposes_prediction"
+                    }
+                ]
+            }
+        },
+        "model_consistency": {
+            "random_forest_class": "Normal",
+            "two_stream_class": "Analysis",
+            "model_disagreement": true,
+            "agreement_status": "Disagreement"
+        },
+        "evidence_strength": {
+            "score": 30,
+            "level": "Low"
+        },
+        "analyst_summary": [
+            "The binary detector identified the traffic as an attack.",
+            "Random Forest predicted Normal with 28.01% confidence.",
+            "Two-Stream predicted Analysis with 26.00% confidence.",
+            "Isolation Forest did not flag the sample as anomalous.",
+            "The supervised classifiers disagree on the specific attack class.",
+            "Overall evidence strength is Low (30/100)."
+        ]
+    },
+    {
+        "sample": {
+            "sample_index": 10000,
+            "network_features": [
+                -0.10975257307291031,
+                0.062138769775629044,
+                -0.5768156051635742,
+                0.3174178898334503,
+                -0.16587583720684052
+            ],
+            "dns_features": [
+                -0.6077567338943481,
+                -0.13912995159626007,
+                -0.3852342963218689,
+                -0.03422252833843231,
+                0.05327878147363663
+            ]
+        },
+        "binary_detection": {
+            "prediction": "Attack",
+            "attack_probability": 0.4506034255027771,
+            "normal_probability": 0.5493965744972229,
+            "threshold": 0.34
+        },
+        "attack_classification": {
+            "random_forest": {
+                "predicted_class": "Normal",
+                "confidence": 0.2,
+                "top_predictions": [
+                    {
+                        "class": "Normal",
+                        "probability": 0.2
+                    },
+                    {
+                        "class": "Generic",
+                        "probability": 0.15028985507246376
+                    },
+                    {
+                        "class": "Fuzzers",
+                        "probability": 0.13362318840579712
+                    }
+                ]
+            },
+            "two_stream": {
+                "binary_prediction": "Attack",
+                "binary_probability": 0.4506034255027771,
+                "binary_threshold": 0.34,
+                "multiclass_prediction": "Exploits",
+                "multiclass_confidence": 0.4084562361240387,
+                "top_predictions": [
+                    {
+                        "class": "Exploits",
+                        "probability": 0.4084562361240387
+                    },
+                    {
+                        "class": "Normal",
+                        "probability": 0.18992041051387787
+                    },
+                    {
+                        "class": "DoS",
+                        "probability": 0.13335871696472168
+                    }
+                ]
+            }
+        },
+        "anomaly_detection": {
+            "is_anomaly": false,
+            "anomaly_score": 0.12683001356860218,
+            "interpretation": "Within learned normal traffic distribution"
+        },
+        "explainability": {
+            "local_shap": {
+                "predicted_class": "Normal",
+                "confidence": 0.2,
+                "top_features": [
+                    {
+                        "feature": "packet_size",
+                        "feature_value": -0.16587583720684052,
+                        "contribution": 0.12491421088774463,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "packet_rate",
+                        "feature_value": -0.5768156051635742,
+                        "contribution": -0.10486542030329289,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "protocol_distribution",
+                        "feature_value": 0.062138769775629044,
+                        "contribution": 0.03162530438066319,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "inter_arrival_time",
+                        "feature_value": -0.10975257307291031,
+                        "contribution": 0.028908462949866254,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "flow_duration",
+                        "feature_value": 0.3174178898334503,
+                        "contribution": 0.009921376306037843,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "dns_query_frequency",
+                        "feature_value": -0.13912995159626007,
+                        "contribution": 0.004636782079341883,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_type_distribution",
+                        "feature_value": -0.6077567338943481,
+                        "contribution": 0.003486247611128732,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "dns_response_activity",
+                        "feature_value": -0.03422252833843231,
+                        "contribution": 0.0015642822443403385,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_length",
+                        "feature_value": 0.05327878147363663,
+                        "contribution": -0.00021559231353328906,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "query_rate",
+                        "feature_value": -0.3852342963218689,
+                        "contribution": 5.4756871994168606e-05,
+                        "direction": "supports_prediction"
+                    }
+                ]
+            },
+            "global_shap": {
+                "available": false,
+                "message": "Could not process global SHAP: 'mean_abs_shap'"
+            },
+            "lime": {
+                "predicted_class": "Normal",
+                "confidence": 0.2,
+                "top_features": [
+                    {
+                        "feature": "packet_size",
+                        "feature_value": -0.16587583720684052,
+                        "contribution": -0.1096457871617393,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "packet_rate",
+                        "feature_value": -0.5768156051635742,
+                        "contribution": -0.062173115443961126,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "query_type_distribution",
+                        "feature_value": -0.6077567338943481,
+                        "contribution": 0.04403157207832736,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "dns_response_activity",
+                        "feature_value": -0.03422252833843231,
+                        "contribution": 0.04137663695924991,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "protocol_distribution",
+                        "feature_value": 0.062138769775629044,
+                        "contribution": -0.03450571247908722,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "dns_query_frequency",
+                        "feature_value": -0.13912995159626007,
+                        "contribution": 0.027307011829411604,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "query_length",
+                        "feature_value": 0.05327878147363663,
+                        "contribution": -0.023361432243813787,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "flow_duration",
+                        "feature_value": 0.3174178898334503,
+                        "contribution": 0.011037390078069191,
+                        "direction": "supports_prediction"
+                    },
+                    {
+                        "feature": "inter_arrival_time",
+                        "feature_value": -0.10975257307291031,
+                        "contribution": -0.010966976955190506,
+                        "direction": "opposes_prediction"
+                    },
+                    {
+                        "feature": "query_rate",
+                        "feature_value": -0.3852342963218689,
+                        "contribution": 0.004417295919372115,
+                        "direction": "supports_prediction"
+                    }
+                ]
+            }
+        },
+        "model_consistency": {
+            "random_forest_class": "Normal",
+            "two_stream_class": "Exploits",
+            "model_disagreement": true,
+            "agreement_status": "Disagreement"
+        },
+        "evidence_strength": {
+            "score": 40,
+            "level": "Low"
+        },
+        "analyst_summary": [
+            "The binary detector identified the traffic as an attack.",
+            "Random Forest predicted Normal with 20.00% confidence.",
+            "Two-Stream predicted Exploits with 40.85% confidence.",
+            "Isolation Forest did not flag the sample as anomalous.",
+            "The supervised classifiers disagree on the specific attack class.",
+            "Overall evidence strength is Low (40/100)."
+        ]
+    }
+]

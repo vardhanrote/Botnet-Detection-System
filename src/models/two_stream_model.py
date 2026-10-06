@@ -1,16 +1,18 @@
 """
-Two-Stream CNN + Multi-Head Attention + BiLSTM model
+Two-Stream CNN + Multi-Head Attention + BiLSTM model.
 
-The model has:
-1. Network feature branch
-2. DNS feature branch
-3. Feature fusion
-4. Multi-Head Self Attention
-5. Residual connection
-6. BiLSTM
-7. Dense layer
-8. Binary classification head
-9. 10-class attack classification head
+The model has two separate input streams:
+
+1. Network traffic features
+2. DNS-related features
+
+The two streams are processed separately using CNN layers.
+Their representations are then fused and passed through
+Multi-Head Attention and a BiLSTM.
+
+The model produces:
+- Binary prediction: Normal vs Attack
+- Multiclass prediction: 10 traffic/attack categories
 """
 
 import torch
@@ -19,73 +21,60 @@ import torch.nn as nn
 
 class FeatureBranch(nn.Module):
     """
-    Processes one feature stream.
-
-    Example:
-    Network stream -> Conv1D -> BatchNorm -> ReLU -> MaxPool -> Conv1D
-    DNS stream     -> Conv1D -> BatchNorm -> ReLU -> MaxPool -> Conv1D
+    CNN branch used for either network or DNS features.
     """
 
-    def __init__(self, input_features=5):
+    def __init__(self):
         super().__init__()
 
-        self.conv1 = nn.Conv1d(
-            in_channels=1,
-            out_channels=16,
-            kernel_size=3,
-            padding=1
+        self.cnn = nn.Sequential(
+            # First convolution
+            nn.Conv1d(
+                in_channels=1,
+                out_channels=16,
+                kernel_size=3,
+                padding=1
+            ),
+
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+
+            # Reduce feature sequence length
+            nn.MaxPool1d(kernel_size=2),
+
+            # Second convolution
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=32,
+                kernel_size=3,
+                padding=1
+            ),
+
+            nn.BatchNorm1d(32),
+            nn.ReLU()
         )
-
-        self.bn1 = nn.BatchNorm1d(16)
-
-        self.relu = nn.ReLU()
-
-        self.pool = nn.MaxPool1d(
-            kernel_size=2
-        )
-
-        self.conv2 = nn.Conv1d(
-            in_channels=16,
-            out_channels=32,
-            kernel_size=3,
-            padding=1
-        )
-
-        self.bn2 = nn.BatchNorm1d(32)
 
     def forward(self, x):
         """
-        Input shape:
-        [batch_size, 5]
+        Input:
+            x -> [batch_size, 5]
 
-        Conv1D expects:
-        [batch_size, channels, sequence_length]
-
-        Therefore we convert:
-
-        [B, 5]
-            ↓
-        [B, 1, 5]
+        Output:
+            [batch_size, 2, 32]
         """
 
+        # Add channel dimension
+        # [B, 5] -> [B, 1, 5]
         x = x.unsqueeze(1)
 
-        x = self.conv1(x)
-        x = self.bn1(x)
-        x = self.relu(x)
+        # CNN processing
+        x = self.cnn(x)
 
-        x = self.pool(x)
+        # CNN output:
+        # [B, 32, 2]
 
-        x = self.conv2(x)
-        x = self.bn2(x)
-        x = self.relu(x)
-
-        # Change from:
-        # [B, 32, sequence_length]
-        #
-        # to:
-        # [B, sequence_length, 32]
-
+        # Convert to sequence format:
+        # [B, 2, 32]
         x = x.transpose(1, 2)
 
         return x
@@ -93,149 +82,116 @@ class FeatureBranch(nn.Module):
 
 class TwoStreamModel(nn.Module):
     """
-    Complete two-stream cybersecurity attack detection model.
+    Main Two-Stream model.
 
-    Inputs:
-        network_features -> 5 features
-        dns_features     -> 5 features
-
-    Outputs:
-        binary_logits     -> normal vs attack
-        multiclass_logits -> 10 attack categories
+    Network features and DNS features are processed separately,
+    then fused using Multi-Head Attention and BiLSTM.
     """
 
     def __init__(
         self,
-        network_features=5,
-        dns_features=5,
-        attention_heads=4,
-        lstm_hidden=64,
-        dropout=0.20,
-        num_classes=10
+        num_network_features=5,
+        num_dns_features=5,
+        num_classes=10,
+        hidden_size=64,
+        num_attention_heads=4,
+        dropout=0.20
     ):
         super().__init__()
 
-        # ----------------------------------------
-        # 1. Network branch
-        # ----------------------------------------
+        # Separate CNN branches
+        self.network_branch = FeatureBranch()
+        self.dns_branch = FeatureBranch()
 
-        self.network_branch = FeatureBranch(
-            input_features=network_features
-        )
+        # Each branch produces 32 channels.
+        # After fusion:
+        # 32 + 32 = 64
+        fusion_dim = 64
 
-        # ----------------------------------------
-        # 2. DNS branch
-        # ----------------------------------------
-
-        self.dns_branch = FeatureBranch(
-            input_features=dns_features
-        )
-
-        # ----------------------------------------
-        # 3. Feature Fusion
-        # ----------------------------------------
-        #
-        # Each branch produces:
-        # [B, sequence_length, 32]
-        #
-        # Concatenating channels gives:
-        # [B, sequence_length, 64]
-
-        self.fusion_size = 64
-
-        # ----------------------------------------
-        # 4. Multi-Head Attention
-        # ----------------------------------------
-
+        # Multi-Head Attention
         self.attention = nn.MultiheadAttention(
-            embed_dim=self.fusion_size,
-            num_heads=attention_heads,
+            embed_dim=fusion_dim,
+            num_heads=num_attention_heads,
             batch_first=True
         )
 
-        # ----------------------------------------
-        # 5. BiLSTM
-        # ----------------------------------------
-
+        # BiLSTM
         self.bilstm = nn.LSTM(
-            input_size=self.fusion_size,
-            hidden_size=lstm_hidden,
+            input_size=fusion_dim,
+            hidden_size=hidden_size,
             batch_first=True,
             bidirectional=True
         )
 
-        # Because BiLSTM is bidirectional:
-        # output size = hidden_size * 2
-
-        lstm_output_size = lstm_hidden * 2
-
-        # ----------------------------------------
-        # 6. Dense layer
-        # ----------------------------------------
-
-        self.fc1 = nn.Linear(
-            lstm_output_size,
-            128
+        # Final dense layer
+        self.classifier = nn.Sequential(
+            nn.Linear(hidden_size * 2, 128),
+            nn.ReLU(),
+            nn.Dropout(dropout)
         )
 
-        self.dropout = nn.Dropout(dropout)
+        # Binary classification head
+        self.binary_head = nn.Linear(128, 1)
 
-        self.relu = nn.ReLU()
-
-        # ----------------------------------------
-        # 7. Binary classification head
-        # ----------------------------------------
-
-        self.binary_head = nn.Linear(
-            128,
-            1
-        )
-
-        # ----------------------------------------
-        # 8. Multiclass classification head
-        # ----------------------------------------
-
-        self.multiclass_head = nn.Linear(
-            128,
-            num_classes
-        )
+        # 10-class classification head
+        self.multiclass_head = nn.Linear(128, num_classes)
 
     def forward(self, network_x, dns_x):
+        """
+        Parameters
+        ----------
+        network_x:
+            Network features [B, 5]
 
-        # ----------------------------------------
-        # Network stream
-        # ----------------------------------------
+        dns_x:
+            DNS features [B, 5]
 
-        network_features = self.network_branch(
-            network_x
-        )
+        Returns
+        -------
+        binary_logits:
+            [B]
 
-        # ----------------------------------------
-        # DNS stream
-        # ----------------------------------------
+        multiclass_logits:
+            [B, 10]
 
-        dns_features = self.dns_branch(
-            dns_x
-        )
+        attention_weights:
+            Attention information for explainability
+        """
 
-        # ----------------------------------------
-        # Feature fusion
-        # ----------------------------------------
+        # --------------------------------------------------
+        # 1. Process network features
+        # --------------------------------------------------
 
+        network_features = self.network_branch(network_x)
+
+        # Shape:
+        # [B, 2, 32]
+
+        # --------------------------------------------------
+        # 2. Process DNS features
+        # --------------------------------------------------
+
+        dns_features = self.dns_branch(dns_x)
+
+        # Shape:
+        # [B, 2, 32]
+
+        # --------------------------------------------------
+        # 3. Feature fusion
+        # --------------------------------------------------
+
+        # Concatenate feature representations
         fused = torch.cat(
-            [
-                network_features,
-                dns_features
-            ],
+            [network_features, dns_features],
             dim=2
         )
 
-        # fused shape:
-        # [B, sequence_length, 64]
+        # Shape:
+        # [B, 2, 64]
 
-        # ----------------------------------------
-        # Multi-Head Attention
-        # ----------------------------------------
+        # --------------------------------------------------
+        # 4. Multi-Head Attention
+        # --------------------------------------------------
 
         attention_output, attention_weights = self.attention(
             fused,
@@ -243,52 +199,50 @@ class TwoStreamModel(nn.Module):
             fused
         )
 
-        # ----------------------------------------
         # Residual connection
-        # ----------------------------------------
+        fused = fused + attention_output
 
-        attention_output = attention_output + fused
+        # --------------------------------------------------
+        # 5. BiLSTM
+        # --------------------------------------------------
 
-        # ----------------------------------------
-        # BiLSTM
-        # ----------------------------------------
+        lstm_output, _ = self.bilstm(fused)
 
-        lstm_output, _ = self.bilstm(
-            attention_output
+        # Shape:
+        # [B, 2, 128]
+        #
+        # 128 = 64 forward + 64 backward
+
+        # --------------------------------------------------
+        # 6. Mean pooling
+        # --------------------------------------------------
+
+        representation = lstm_output.mean(dim=1)
+
+        # Shape:
+        # [B, 128]
+
+        # --------------------------------------------------
+        # 7. Dense representation
+        # --------------------------------------------------
+
+        representation = self.classifier(representation)
+
+        # --------------------------------------------------
+        # 8. Binary prediction
+        # --------------------------------------------------
+
+        binary_logits = self.binary_head(
+            representation
+        ).squeeze(1)
+
+        # --------------------------------------------------
+        # 9. Multiclass prediction
+        # --------------------------------------------------
+
+        multiclass_logits = self.multiclass_head(
+            representation
         )
-
-        # ----------------------------------------
-        # Global average pooling
-        # ----------------------------------------
-
-        pooled = torch.mean(
-            lstm_output,
-            dim=1
-        )
-
-        # ----------------------------------------
-        # Dense layer
-        # ----------------------------------------
-
-        x = self.fc1(pooled)
-
-        x = self.relu(x)
-
-        x = self.dropout(x)
-
-        # ----------------------------------------
-        # Binary output
-        # ----------------------------------------
-
-        binary_logits = self.binary_head(x)
-
-        binary_logits = binary_logits.squeeze(1)
-
-        # ----------------------------------------
-        # Multiclass output
-        # ----------------------------------------
-
-        multiclass_logits = self.multiclass_head(x)
 
         return (
             binary_logits,
@@ -297,38 +251,52 @@ class TwoStreamModel(nn.Module):
         )
 
 
+# ----------------------------------------------------------
+# Simple model test
+# ----------------------------------------------------------
+
 if __name__ == "__main__":
 
-    # Simple model test
+    print("Testing TwoStreamModel...")
 
+    # Create model
     model = TwoStreamModel()
 
-    print(model)
+    # Create fake network input
+    network_input = torch.randn(4, 5)
 
-    # Create dummy data
+    # Create fake DNS input
+    dns_input = torch.randn(4, 5)
 
-    network = torch.randn(4, 5)
-
-    dns = torch.randn(4, 5)
-
-    # Forward pass
-
+    # Run model
     binary_output, multiclass_output, attention = model(
-        network,
-        dns
+        network_input,
+        dns_input
     )
 
-    print("\nNetwork input:")
-    print(network.shape)
+    print(
+        "Network input shape:",
+        network_input.shape
+    )
 
-    print("\nDNS input:")
-    print(dns.shape)
+    print(
+        "DNS input shape:",
+        dns_input.shape
+    )
 
-    print("\nBinary output:")
-    print(binary_output.shape)
+    print(
+        "Binary output shape:",
+        binary_output.shape
+    )
 
-    print("\nMulticlass output:")
-    print(multiclass_output.shape)
+    print(
+        "Multiclass output shape:",
+        multiclass_output.shape
+    )
 
-    print("\nAttention output:")
-    print(attention.shape)
+    print(
+        "Attention shape:",
+        attention.shape
+    )
+
+    print("\nModel test successful.")

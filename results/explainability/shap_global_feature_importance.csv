@@ -1,0 +1,11 @@
+feature,mean_absolute_shap
+dns_response_activity,0.02096662010958395
+protocol_distribution,0.020495467909198067
+inter_arrival_time,0.020095718728072094
+query_type_distribution,0.016602259001698705
+query_length,0.016277439173012567
+flow_duration,0.01585897543584458
+packet_size,0.0157364476414293
+query_rate,0.014062346112823716
+dns_query_frequency,0.01304427372201919
+packet_rate,0.011422927375111625

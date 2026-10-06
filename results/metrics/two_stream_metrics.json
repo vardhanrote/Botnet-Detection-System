@@ -1,0 +1,15 @@
+{
+    "binary": {
+        "accuracy": 0.7097847738424914,
+        "precision": 0.6551319902744008,
+        "recall": 0.9985661342980676,
+        "f1": 0.7911874715978606
+    },
+    "multiclass": {
+        "accuracy": 0.526684642666278,
+        "precision_weighted": 0.7981595931269733,
+        "recall_weighted": 0.526684642666278,
+        "f1_weighted": 0.5868066309223723
+    },
+    "training_time_minutes": 77.39597423871358
+}
