@@ -1,0 +1,9 @@
+{
+    "model": "random_forest",
+    "task": "binary",
+    "accuracy": 0.591726181800515,
+    "precision": 0.585453007409136,
+    "recall": 0.885489279096444,
+    "f1_score": 0.7048711104867599,
+    "training_time_seconds": 75.25404620170593
+}

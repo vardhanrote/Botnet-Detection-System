@@ -1,0 +1,47 @@
+{
+    "network_features": [
+        "inter_arrival_time",
+        "protocol_distribution",
+        "packet_rate",
+        "flow_duration",
+        "packet_size"
+    ],
+    "dns_features": [
+        "query_type_distribution",
+        "dns_query_frequency",
+        "query_rate",
+        "dns_response_activity",
+        "query_length"
+    ],
+    "network_feature_count": 5,
+    "dns_feature_count": 5,
+    "class_names": [
+        "Normal",
+        "Generic",
+        "Exploits",
+        "Fuzzers",
+        "DoS",
+        "Reconnaissance",
+        "Analysis",
+        "Backdoor",
+        "Shellcode",
+        "Worms"
+    ],
+    "class_to_id": {
+        "Normal": 0,
+        "Generic": 1,
+        "Exploits": 2,
+        "Fuzzers": 3,
+        "DoS": 4,
+        "Reconnaissance": 5,
+        "Analysis": 6,
+        "Backdoor": 7,
+        "Shellcode": 8,
+        "Worms": 9
+    },
+    "random_state": 42,
+    "validation_size": 0.1,
+    "smote_applied": true,
+    "smote_applied_only_to_training": true,
+    "dns_features_are_flow_proxies": true
+}

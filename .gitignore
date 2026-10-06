@@ -1,0 +1,42 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Environment/secrets
+.env
+.env.*
+
+# Raw datasets
+data/raw/
+
+# Generated processed datasets
+data/processed/*.csv
+data/processed/*.npy
+data/processed/*.pkl
+
+# Trained models
+models/**/*.pkl
+models/**/*.pth
+models/**/*.joblib
+
+# Generated predictions
+results/predictions/
+
+# Generated plots
+results/figures/
+
+# IDE
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db

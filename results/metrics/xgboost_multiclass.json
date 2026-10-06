@@ -1,0 +1,9 @@
+{
+    "model": "xgboost",
+    "task": "multiclass",
+    "accuracy": 0.5220934751979789,
+    "precision": 0.8151819202096332,
+    "recall": 0.5220934751979789,
+    "f1_score": 0.5985123419947135,
+    "training_time_seconds": 211.13087964057922
+}

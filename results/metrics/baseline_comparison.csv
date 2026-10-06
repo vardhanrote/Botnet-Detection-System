@@ -1,0 +1,6 @@
+model,task,accuracy,precision,recall,f1_score,training_time_seconds
+cnn_lstm,multiclass,0.5805,0.7889,0.5805,0.6387,1057.1439518928528
+random_forest,binary,0.5917,0.5855,0.8855,0.7049,75.25404620170593
+random_forest,multiclass,0.6371,0.865,0.6371,0.7136,129.1519730091095
+xgboost,binary,0.5909,0.58,0.9315,0.7149,21.22737455368042
+xgboost,multiclass,0.5221,0.8152,0.5221,0.5985,211.13087964057922

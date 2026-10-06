@@ -1,0 +1,9 @@
+{
+    "model": "cnn_lstm",
+    "task": "multiclass",
+    "accuracy": 0.5804790360977505,
+    "precision": 0.7889127069656531,
+    "recall": 0.5804790360977505,
+    "f1_score": 0.6387217011929651,
+    "training_time_seconds": 1057.1439518928528
+}
