@@ -18,7 +18,7 @@
                 },
                 "classifier_assessment": {
                     "random_forest_class": "Normal",
-                    "random_forest_confidence": 0.1716707672694551,
+                    "random_forest_confidence": 0.17167076726945513,
                     "two_stream_class": "Shellcode",
                     "two_stream_confidence": 0.8003091812133789
                 },
@@ -64,7 +64,7 @@
                 },
                 "classifier_assessment": {
                     "random_forest_class": "Generic",
-                    "random_forest_confidence": 0.27376778776778776,
+                    "random_forest_confidence": 0.2737677877677877,
                     "two_stream_class": "Fuzzers",
                     "two_stream_confidence": 0.3799581527709961
                 },
