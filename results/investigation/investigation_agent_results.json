@@ -9,342 +9,1040 @@
       "agent": {
         "name": "CyberAgent Investigation Agent",
         "version": "1.0.0",
-        "reasoning_type": "evidence-grounded"
+        "type": "Evidence-grounded investigation agent"
       },
       "investigation_verdict": {
-        "verdict": "Potential malicious activity detected, but the exact threat category is uncertain. Classifier disagreement reduces confidence in the exact attack category.",
+        "verdict": "Potential malicious activity was detected, but the exact threat category is uncertain. Classifier disagreement reduces confidence in the exact attack category.",
         "threat_class": "Normal",
-        "severity": "Unknown",
-        "confidence_level": "Very Low",
-        "confidence_score": 36.41
+        "severity": {
+          "level": "Informational",
+          "score": 12.94
+        },
+        "confidence": {
+          "score": 36.41,
+          "level": "Very Low",
+          "interpretation": "Agent confidence represents the strength and consistency of the available evidence. It is not an attack probability."
+        }
       },
       "threat_class": "Normal",
       "severity": {
-        "level": "Unknown",
-        "score": null
+        "level": "Informational",
+        "score": 12.94
       },
       "agent_confidence": {
         "score": 36.41,
         "level": "Very Low",
-        "basis": [
-          "binary detector confidence",
-          "Random Forest confidence",
-          "Two-Stream confidence",
-          "overall evidence strength"
-        ],
-        "note": "Agent confidence reflects agreement and strength of available evidence. It is not a probability that the attack occurred."
+        "interpretation": "Agent confidence represents the strength and consistency of the available evidence. It is not an attack probability."
+      },
+      "confidence": {
+        "score": 36.41,
+        "level": "Very Low",
+        "interpretation": "Agent confidence represents the strength and consistency of the available evidence. It is not an attack probability."
       },
       "key_findings": [
-        "The binary detector identified the traffic as an attack with an attack probability of 73.93%.",
+        "Binary detection classified the traffic as attack activity with 73.93% attack probability.",
         "Random Forest predicted Normal with 17.17% confidence.",
-        "Two-Stream predicted Shellcode with 80.03% confidence.",
+        "Two-Stream model predicted Shellcode with 80.03% confidence.",
+        "The supervised classifiers disagree on the specific threat category.",
         "Isolation Forest did not flag the sample as anomalous.",
-        "The supervised classifiers disagree on the specific attack class.",
-        "Overall evidence strength is Low.",
-        "The investigation is currently centered on the Normal threat category."
+        "Overall evidence strength is Low (50/100)."
+      ],
+      "findings": [
+        "Binary detection classified the traffic as attack activity with 73.93% attack probability.",
+        "Random Forest predicted Normal with 17.17% confidence.",
+        "Two-Stream model predicted Shellcode with 80.03% confidence.",
+        "The supervised classifiers disagree on the specific threat category.",
+        "Isolation Forest did not flag the sample as anomalous.",
+        "Overall evidence strength is Low (50/100)."
       ],
       "reasoning": [
-        "Step 1: The binary detection stage provides evidence that the traffic is potentially malicious.",
-        "Step 2: The supervised classifiers provide different attack-class predictions, reducing confidence in the exact threat category.",
-        "Step 3: Isolation Forest does not identify the sample as anomalous, so anomaly evidence is absent.",
-        "Step 4: The combined evidence strength is Low.",
-        "Step 5: The current investigation priority is Unknown for the Normal category."
+        "The binary detector provides evidence that the traffic may represent malicious activity.",
+        "The supervised classifiers produce different threat categories, reducing confidence in the exact attack classification.",
+        "Isolation Forest does not independently support the presence of an anomaly.",
+        "The overall evidence strength is low, so the investigation result should be treated as preliminary."
       ],
       "explainability": {
-        "shap": {},
-        "lime": {}
+        "shap": {
+          "predicted_class": "Normal",
+          "confidence": 0.1716707672694551,
+          "top_features": [
+            {
+              "feature": "query_length",
+              "feature_value": 0.5436543822288513,
+              "contribution": -0.025225648050484387,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "packet_size",
+              "feature_value": 0.34739333391189575,
+              "contribution": 0.022374085405560937,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "protocol_distribution",
+              "feature_value": 0.33090075850486755,
+              "contribution": 0.02138686277086983,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "packet_rate",
+              "feature_value": -0.027039755135774612,
+              "contribution": 0.020194905757117836,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "flow_duration",
+              "feature_value": -0.21009866893291473,
+              "contribution": 0.01760475990943501,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "inter_arrival_time",
+              "feature_value": -0.1448671817779541,
+              "contribution": 0.007254961178247466,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_type_distribution",
+              "feature_value": -0.6077567338943481,
+              "contribution": 0.003440499560942807,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "dns_query_frequency",
+              "feature_value": -0.13912995159626007,
+              "contribution": 0.0028302955639256957,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "dns_response_activity",
+              "feature_value": -0.03422252833843231,
+              "contribution": 0.0018138896376719896,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_rate",
+              "feature_value": -0.3852342963218689,
+              "contribution": 2.656625045322977e-05,
+              "direction": "supports_prediction"
+            }
+          ]
+        },
+        "lime": {
+          "predicted_class": "Normal",
+          "confidence": 0.1716707672694551,
+          "top_features": [
+            {
+              "feature": "packet_size",
+              "feature_value": 0.34739333391189575,
+              "contribution": -0.10572345435417348,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "packet_rate",
+              "feature_value": -0.027039755135774612,
+              "contribution": 0.0913721417208013,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_type_distribution",
+              "feature_value": -0.6077567338943481,
+              "contribution": 0.04652265401032219,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_length",
+              "feature_value": 0.5436543822288513,
+              "contribution": -0.024135011151535747,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "dns_response_activity",
+              "feature_value": -0.03422252833843231,
+              "contribution": 0.023675879699352833,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "dns_query_frequency",
+              "feature_value": -0.13912995159626007,
+              "contribution": 0.023539104428303884,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "protocol_distribution",
+              "feature_value": 0.33090075850486755,
+              "contribution": 0.019000953544861324,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "flow_duration",
+              "feature_value": -0.21009866893291473,
+              "contribution": -0.012984632256508937,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "inter_arrival_time",
+              "feature_value": -0.1448671817779541,
+              "contribution": -0.0030228522383703026,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "query_rate",
+              "feature_value": -0.3852342963218689,
+              "contribution": -0.0013316410604901714,
+              "direction": "opposes_prediction"
+            }
+          ]
+        },
+        "interpretation": "SHAP and LIME provide local model explanations. They describe feature contributions to the prediction and should not be interpreted as causal evidence."
       },
-      "mitre_attack": {
-        "candidate_techniques": [],
+      "mitre": {
+        "mappings": [],
         "analyst_guidance": [],
-        "mapping_policy": "ATT&CK techniques are candidate mappings based on flow-level evidence and require corroborating host, application, authentication, or other telemetry before being treated as confirmed."
+        "mapping_policy": "ATT&CK mappings are candidate mappings based on flow-level evidence and require additional telemetry for confirmation."
       },
       "recommended_actions": [
-        "Keep the event under monitoring and collect additional evidence if available.",
-        "Investigate the classifier disagreement before assigning a definitive attack category.",
-        "Review SHAP and LIME explanations to understand which input features influenced the model decision."
+        "Treat the event as informational unless additional evidence increases its priority.",
+        "Use additional telemetry because classifier disagreement reduces confidence in the exact threat category."
       ],
       "limitations": [
-        "The investigation uses flow-level evidence derived from UNSW-NB15.",
-        "DNS features are DNS-derived flow proxies, not raw DNS packet-level features.",
-        "Isolation Forest identifies deviation from learned normal traffic and does not prove maliciousness.",
-        "SHAP and LIME describe model behavior and should not be interpreted as causal explanations.",
-        "MITRE ATT&CK mappings are candidate mappings and require corroborating telemetry.",
-        "Agent confidence is an evidence-strength indicator, not an attack probability."
+        "The investigation agent operates on flow-level network features and does not have direct host, process, authentication, or packet-payload telemetry.",
+        "Isolation Forest anomaly detection indicates deviation from learned normal traffic and does not by itself prove malicious activity.",
+        "SHAP and LIME describe model behavior and feature contribution; they do not establish causal relationships.",
+        "MITRE ATT&CK mappings are candidate mappings and require corroborating telemetry before being treated as confirmed techniques.",
+        "Agent confidence represents evidence strength and consistency, not attack probability."
       ]
     },
     {
       "agent": {
         "name": "CyberAgent Investigation Agent",
         "version": "1.0.0",
-        "reasoning_type": "evidence-grounded"
+        "type": "Evidence-grounded investigation agent"
       },
       "investigation_verdict": {
-        "verdict": "Potential Generic activity requires investigation. Classifier disagreement reduces confidence in the exact attack category.",
+        "verdict": "Potential malicious activity was detected, but the exact threat category is uncertain. Classifier disagreement reduces confidence in the exact attack category.",
         "threat_class": "Generic",
-        "severity": "Unknown",
-        "confidence_level": "Very Low",
-        "confidence_score": 16.41
+        "severity": {
+          "level": "Low",
+          "score": 27.5
+        },
+        "confidence": {
+          "score": 16.41,
+          "level": "Very Low",
+          "interpretation": "Agent confidence represents the strength and consistency of the available evidence. It is not an attack probability."
+        }
       },
       "threat_class": "Generic",
       "severity": {
-        "level": "Unknown",
-        "score": null
+        "level": "Low",
+        "score": 27.5
       },
       "agent_confidence": {
         "score": 16.41,
         "level": "Very Low",
-        "basis": [
-          "binary detector confidence",
-          "Random Forest confidence",
-          "Two-Stream confidence",
-          "overall evidence strength"
-        ],
-        "note": "Agent confidence reflects agreement and strength of available evidence. It is not a probability that the attack occurred."
+        "interpretation": "Agent confidence represents the strength and consistency of the available evidence. It is not an attack probability."
+      },
+      "confidence": {
+        "score": 16.41,
+        "level": "Very Low",
+        "interpretation": "Agent confidence represents the strength and consistency of the available evidence. It is not an attack probability."
       },
       "key_findings": [
-        "The binary detector identified the traffic as an attack with an attack probability of 50.67%.",
+        "Binary detection classified the traffic as attack activity with 50.67% attack probability.",
         "Random Forest predicted Generic with 27.38% confidence.",
-        "Two-Stream predicted Fuzzers with 38.00% confidence.",
+        "Two-Stream model predicted Fuzzers with 38.00% confidence.",
+        "The supervised classifiers disagree on the specific threat category.",
         "Isolation Forest did not flag the sample as anomalous.",
-        "The supervised classifiers disagree on the specific attack class.",
-        "Overall evidence strength is Low.",
-        "The investigation is currently centered on the Generic threat category."
+        "Overall evidence strength is Low (30/100)."
+      ],
+      "findings": [
+        "Binary detection classified the traffic as attack activity with 50.67% attack probability.",
+        "Random Forest predicted Generic with 27.38% confidence.",
+        "Two-Stream model predicted Fuzzers with 38.00% confidence.",
+        "The supervised classifiers disagree on the specific threat category.",
+        "Isolation Forest did not flag the sample as anomalous.",
+        "Overall evidence strength is Low (30/100)."
       ],
       "reasoning": [
-        "Step 1: The binary detection stage provides evidence that the traffic is potentially malicious.",
-        "Step 2: The supervised classifiers provide different attack-class predictions, reducing confidence in the exact threat category.",
-        "Step 3: Isolation Forest does not identify the sample as anomalous, so anomaly evidence is absent.",
-        "Step 4: The combined evidence strength is Low.",
-        "Step 5: The current investigation priority is Unknown for the Generic category."
+        "The binary detector provides evidence that the traffic may represent malicious activity.",
+        "The supervised classifiers produce different threat categories, reducing confidence in the exact attack classification.",
+        "Isolation Forest does not independently support the presence of an anomaly.",
+        "The overall evidence strength is low, so the investigation result should be treated as preliminary."
       ],
       "explainability": {
-        "shap": {},
-        "lime": {}
+        "shap": {
+          "predicted_class": "Generic",
+          "confidence": 0.27376778776778776,
+          "top_features": [
+            {
+              "feature": "packet_size",
+              "feature_value": -0.5960098505020142,
+              "contribution": 0.10006744351997289,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_length",
+              "feature_value": -0.44826552271842957,
+              "contribution": 0.07333253728295021,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "protocol_distribution",
+              "feature_value": 0.062138769775629044,
+              "contribution": -0.04512156244453273,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "packet_rate",
+              "feature_value": -0.5769060254096985,
+              "contribution": 0.036221265474616605,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "flow_duration",
+              "feature_value": 2.1260175704956055,
+              "contribution": -0.013457498201403236,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "query_type_distribution",
+              "feature_value": -0.6077567338943481,
+              "contribution": 0.010990109116795467,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "dns_query_frequency",
+              "feature_value": -0.13912995159626007,
+              "contribution": 0.009985547284036488,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "dns_response_activity",
+              "feature_value": -0.03422252833843231,
+              "contribution": 0.009139208601368054,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "inter_arrival_time",
+              "feature_value": 0.08236245810985565,
+              "contribution": -0.0074958510449887284,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "query_rate",
+              "feature_value": -0.3852342963218689,
+              "contribution": 0.0001287488932684529,
+              "direction": "supports_prediction"
+            }
+          ]
+        },
+        "lime": {
+          "predicted_class": "Generic",
+          "confidence": 0.2737677877677877,
+          "top_features": [
+            {
+              "feature": "query_type_distribution",
+              "feature_value": -0.6077567338943481,
+              "contribution": 0.07021404792539461,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "dns_response_activity",
+              "feature_value": -0.03422252833843231,
+              "contribution": 0.06221712268846231,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "packet_size",
+              "feature_value": -0.5960098505020142,
+              "contribution": 0.054448820292047756,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "protocol_distribution",
+              "feature_value": 0.062138769775629044,
+              "contribution": 0.042319709225654624,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "dns_query_frequency",
+              "feature_value": -0.13912995159626007,
+              "contribution": 0.041932468894948435,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "inter_arrival_time",
+              "feature_value": 0.08236245810985565,
+              "contribution": 0.02363788178263686,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "packet_rate",
+              "feature_value": -0.5769060254096985,
+              "contribution": -0.01015691203009894,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "query_length",
+              "feature_value": -0.44826552271842957,
+              "contribution": -0.0069949057599953636,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "flow_duration",
+              "feature_value": 2.1260175704956055,
+              "contribution": 0.005305362009608153,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_rate",
+              "feature_value": -0.3852342963218689,
+              "contribution": -0.003985600782566944,
+              "direction": "opposes_prediction"
+            }
+          ]
+        },
+        "interpretation": "SHAP and LIME provide local model explanations. They describe feature contributions to the prediction and should not be interpreted as causal evidence."
       },
-      "mitre_attack": {
-        "candidate_techniques": [],
+      "mitre": {
+        "mappings": [],
         "analyst_guidance": [],
-        "mapping_policy": "ATT&CK techniques are candidate mappings based on flow-level evidence and require corroborating host, application, authentication, or other telemetry before being treated as confirmed."
+        "mapping_policy": "ATT&CK mappings are candidate mappings based on flow-level evidence and require additional telemetry for confirmation."
       },
       "recommended_actions": [
-        "Keep the event under monitoring and collect additional evidence if available.",
-        "Investigate the classifier disagreement before assigning a definitive attack category.",
-        "Correlate the predicted threat category with host, application, authentication, and network logs.",
-        "Review SHAP and LIME explanations to understand which input features influenced the model decision."
+        "Monitor the event and correlate it with additional telemetry.",
+        "Use additional telemetry because classifier disagreement reduces confidence in the exact threat category."
       ],
       "limitations": [
-        "The investigation uses flow-level evidence derived from UNSW-NB15.",
-        "DNS features are DNS-derived flow proxies, not raw DNS packet-level features.",
-        "Isolation Forest identifies deviation from learned normal traffic and does not prove maliciousness.",
-        "SHAP and LIME describe model behavior and should not be interpreted as causal explanations.",
-        "MITRE ATT&CK mappings are candidate mappings and require corroborating telemetry.",
-        "Agent confidence is an evidence-strength indicator, not an attack probability."
+        "The investigation agent operates on flow-level network features and does not have direct host, process, authentication, or packet-payload telemetry.",
+        "Isolation Forest anomaly detection indicates deviation from learned normal traffic and does not by itself prove malicious activity.",
+        "SHAP and LIME describe model behavior and feature contribution; they do not establish causal relationships.",
+        "MITRE ATT&CK mappings are candidate mappings and require corroborating telemetry before being treated as confirmed techniques.",
+        "Agent confidence represents evidence strength and consistency, not attack probability."
       ]
     },
     {
       "agent": {
         "name": "CyberAgent Investigation Agent",
         "version": "1.0.0",
-        "reasoning_type": "evidence-grounded"
+        "type": "Evidence-grounded investigation agent"
       },
       "investigation_verdict": {
-        "verdict": "Potential Exploits activity requires investigation.",
+        "verdict": "Potential Exploits activity requires further investigation.",
         "threat_class": "Exploits",
-        "severity": "Unknown",
-        "confidence_level": "Very Low",
-        "confidence_score": 34.89
+        "severity": {
+          "level": "Medium",
+          "score": 50.95
+        },
+        "confidence": {
+          "score": 34.89,
+          "level": "Very Low",
+          "interpretation": "Agent confidence represents the strength and consistency of the available evidence. It is not an attack probability."
+        }
       },
       "threat_class": "Exploits",
       "severity": {
-        "level": "Unknown",
-        "score": null
+        "level": "Medium",
+        "score": 50.95
       },
       "agent_confidence": {
         "score": 34.89,
         "level": "Very Low",
-        "basis": [
-          "binary detector confidence",
-          "Random Forest confidence",
-          "Two-Stream confidence",
-          "classifier agreement",
-          "overall evidence strength"
-        ],
-        "note": "Agent confidence reflects agreement and strength of available evidence. It is not a probability that the attack occurred."
+        "interpretation": "Agent confidence represents the strength and consistency of the available evidence. It is not an attack probability."
+      },
+      "confidence": {
+        "score": 34.89,
+        "level": "Very Low",
+        "interpretation": "Agent confidence represents the strength and consistency of the available evidence. It is not an attack probability."
       },
       "key_findings": [
-        "The binary detector identified the traffic as an attack with an attack probability of 46.47%.",
+        "Binary detection classified the traffic as attack activity with 46.47% attack probability.",
         "Random Forest predicted Exploits with 18.02% confidence.",
-        "Two-Stream predicted Exploits with 45.09% confidence.",
+        "Two-Stream model predicted Exploits with 45.09% confidence.",
+        "The supervised classifiers agree on the predicted threat category.",
         "Isolation Forest did not flag the sample as anomalous.",
-        "The supervised classifiers agree on the predicted attack class.",
-        "Overall evidence strength is Low.",
-        "The investigation is currently centered on the Exploits threat category."
+        "Overall evidence strength is Low (55/100)."
+      ],
+      "findings": [
+        "Binary detection classified the traffic as attack activity with 46.47% attack probability.",
+        "Random Forest predicted Exploits with 18.02% confidence.",
+        "Two-Stream model predicted Exploits with 45.09% confidence.",
+        "The supervised classifiers agree on the predicted threat category.",
+        "Isolation Forest did not flag the sample as anomalous.",
+        "Overall evidence strength is Low (55/100)."
       ],
       "reasoning": [
-        "Step 1: The binary detection stage provides evidence that the traffic is potentially malicious.",
-        "Step 2: Random Forest and Two-Stream both support the Exploits classification.",
-        "Step 3: Isolation Forest does not identify the sample as anomalous, so anomaly evidence is absent.",
-        "Step 4: The combined evidence strength is Low.",
-        "Step 5: The current investigation priority is Unknown for the Exploits category."
+        "The binary detector provides evidence that the traffic may represent malicious activity.",
+        "Random Forest and the Two-Stream classifier produce the same threat category, increasing classification consistency.",
+        "Isolation Forest does not independently support the presence of an anomaly.",
+        "The overall evidence strength is low, so the investigation result should be treated as preliminary."
       ],
       "explainability": {
-        "shap": {},
-        "lime": {}
+        "shap": {
+          "predicted_class": "Exploits",
+          "confidence": 0.18017516420361246,
+          "top_features": [
+            {
+              "feature": "packet_size",
+              "feature_value": 0.6113603711128235,
+              "contribution": 0.058761808319165686,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "packet_rate",
+              "feature_value": -0.5766318440437317,
+              "contribution": -0.04002572777135304,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "query_length",
+              "feature_value": 0.013978929258883,
+              "contribution": 0.026987148958696975,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "inter_arrival_time",
+              "feature_value": -0.13275399804115295,
+              "contribution": 0.01961743966987087,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "protocol_distribution",
+              "feature_value": 0.062138769775629044,
+              "contribution": 0.01410962263312858,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "dns_response_activity",
+              "feature_value": -0.03422252833843231,
+              "contribution": 0.010340559962934991,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "dns_query_frequency",
+              "feature_value": -0.13912995159626007,
+              "contribution": -0.00730668669355589,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "flow_duration",
+              "feature_value": -0.14610601961612701,
+              "contribution": -0.0018617786994670653,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "query_type_distribution",
+              "feature_value": -0.6077567338943481,
+              "contribution": -0.0005027194111673099,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "query_rate",
+              "feature_value": -0.3852342963218689,
+              "contribution": 5.264009250264739e-05,
+              "direction": "supports_prediction"
+            }
+          ]
+        },
+        "lime": {
+          "predicted_class": "Exploits",
+          "confidence": 0.18017516420361246,
+          "top_features": [
+            {
+              "feature": "packet_size",
+              "feature_value": 0.6113603711128235,
+              "contribution": 0.11148841950841158,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_type_distribution",
+              "feature_value": -0.6077567338943481,
+              "contribution": -0.06909037195987262,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "dns_query_frequency",
+              "feature_value": -0.13912995159626007,
+              "contribution": -0.06712207546559013,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "dns_response_activity",
+              "feature_value": -0.03422252833843231,
+              "contribution": -0.038974864096162395,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "packet_rate",
+              "feature_value": -0.5766318440437317,
+              "contribution": -0.029328178258315612,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "query_length",
+              "feature_value": 0.013978929258883,
+              "contribution": 0.01972880994302432,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "flow_duration",
+              "feature_value": -0.14610601961612701,
+              "contribution": -0.008241576728340838,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "query_rate",
+              "feature_value": -0.3852342963218689,
+              "contribution": 0.0059959902650369235,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "protocol_distribution",
+              "feature_value": 0.062138769775629044,
+              "contribution": 0.003927332836625723,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "inter_arrival_time",
+              "feature_value": -0.13275399804115295,
+              "contribution": -0.00343445521750824,
+              "direction": "opposes_prediction"
+            }
+          ]
+        },
+        "interpretation": "SHAP and LIME provide local model explanations. They describe feature contributions to the prediction and should not be interpreted as causal evidence."
       },
-      "mitre_attack": {
-        "candidate_techniques": [],
+      "mitre": {
+        "mappings": [],
         "analyst_guidance": [],
-        "mapping_policy": "ATT&CK techniques are candidate mappings based on flow-level evidence and require corroborating host, application, authentication, or other telemetry before being treated as confirmed."
+        "mapping_policy": "ATT&CK mappings are candidate mappings based on flow-level evidence and require additional telemetry for confirmation."
       },
       "recommended_actions": [
-        "Keep the event under monitoring and collect additional evidence if available.",
-        "Correlate the predicted threat category with host, application, authentication, and network logs.",
-        "Review SHAP and LIME explanations to understand which input features influenced the model decision."
+        "Review the event and collect additional evidence before escalation.",
+        "Check affected services and correlate with host or application logs for exploitation evidence."
       ],
       "limitations": [
-        "The investigation uses flow-level evidence derived from UNSW-NB15.",
-        "DNS features are DNS-derived flow proxies, not raw DNS packet-level features.",
-        "Isolation Forest identifies deviation from learned normal traffic and does not prove maliciousness.",
-        "SHAP and LIME describe model behavior and should not be interpreted as causal explanations.",
-        "MITRE ATT&CK mappings are candidate mappings and require corroborating telemetry.",
-        "Agent confidence is an evidence-strength indicator, not an attack probability."
+        "The investigation agent operates on flow-level network features and does not have direct host, process, authentication, or packet-payload telemetry.",
+        "Isolation Forest anomaly detection indicates deviation from learned normal traffic and does not by itself prove malicious activity.",
+        "SHAP and LIME describe model behavior and feature contribution; they do not establish causal relationships.",
+        "MITRE ATT&CK mappings are candidate mappings and require corroborating telemetry before being treated as confirmed techniques.",
+        "Agent confidence represents evidence strength and consistency, not attack probability."
       ]
     },
     {
       "agent": {
         "name": "CyberAgent Investigation Agent",
         "version": "1.0.0",
-        "reasoning_type": "evidence-grounded"
+        "type": "Evidence-grounded investigation agent"
       },
       "investigation_verdict": {
-        "verdict": "Potential malicious activity detected, but the exact threat category is uncertain. Classifier disagreement reduces confidence in the exact attack category.",
+        "verdict": "Potential malicious activity was detected, but the exact threat category is uncertain. Classifier disagreement reduces confidence in the exact attack category.",
         "threat_class": "Normal",
-        "severity": "Unknown",
-        "confidence_level": "Very Low",
-        "confidence_score": 38.06
+        "severity": {
+          "level": "Informational",
+          "score": 11.66
+        },
+        "confidence": {
+          "score": 38.06,
+          "level": "Very Low",
+          "interpretation": "Agent confidence represents the strength and consistency of the available evidence. It is not an attack probability."
+        }
       },
       "threat_class": "Normal",
       "severity": {
-        "level": "Unknown",
-        "score": null
+        "level": "Informational",
+        "score": 11.66
       },
       "agent_confidence": {
         "score": 38.06,
         "level": "Very Low",
-        "basis": [
-          "binary detector confidence",
-          "Random Forest confidence",
-          "Two-Stream confidence",
-          "overall evidence strength"
-        ],
-        "note": "Agent confidence reflects agreement and strength of available evidence. It is not a probability that the attack occurred."
+        "interpretation": "Agent confidence represents the strength and consistency of the available evidence. It is not an attack probability."
+      },
+      "confidence": {
+        "score": 38.06,
+        "level": "Very Low",
+        "interpretation": "Agent confidence represents the strength and consistency of the available evidence. It is not an attack probability."
       },
       "key_findings": [
-        "The binary detector identified the traffic as an attack with an attack probability of 98.51%.",
+        "Binary detection classified the traffic as attack activity with 98.51% attack probability.",
         "Random Forest predicted Normal with 28.01% confidence.",
-        "Two-Stream predicted Analysis with 26.00% confidence.",
+        "Two-Stream model predicted Analysis with 26.00% confidence.",
+        "The supervised classifiers disagree on the specific threat category.",
         "Isolation Forest did not flag the sample as anomalous.",
-        "The supervised classifiers disagree on the specific attack class.",
-        "Overall evidence strength is Low.",
-        "The investigation is currently centered on the Normal threat category."
+        "Overall evidence strength is Low (30/100)."
+      ],
+      "findings": [
+        "Binary detection classified the traffic as attack activity with 98.51% attack probability.",
+        "Random Forest predicted Normal with 28.01% confidence.",
+        "Two-Stream model predicted Analysis with 26.00% confidence.",
+        "The supervised classifiers disagree on the specific threat category.",
+        "Isolation Forest did not flag the sample as anomalous.",
+        "Overall evidence strength is Low (30/100)."
       ],
       "reasoning": [
-        "Step 1: The binary detection stage provides evidence that the traffic is potentially malicious.",
-        "Step 2: The supervised classifiers provide different attack-class predictions, reducing confidence in the exact threat category.",
-        "Step 3: Isolation Forest does not identify the sample as anomalous, so anomaly evidence is absent.",
-        "Step 4: The combined evidence strength is Low.",
-        "Step 5: The current investigation priority is Unknown for the Normal category."
+        "The binary detector provides evidence that the traffic may represent malicious activity.",
+        "The supervised classifiers produce different threat categories, reducing confidence in the exact attack classification.",
+        "Isolation Forest does not independently support the presence of an anomaly.",
+        "The overall evidence strength is low, so the investigation result should be treated as preliminary."
       ],
       "explainability": {
-        "shap": {},
-        "lime": {}
+        "shap": {
+          "predicted_class": "Normal",
+          "confidence": 0.28008564707150546,
+          "top_features": [
+            {
+              "feature": "packet_size",
+              "feature_value": -0.34040799736976624,
+              "contribution": 0.12549247744221187,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "flow_duration",
+              "feature_value": -0.21009914577007294,
+              "contribution": -0.0303907801757342,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "inter_arrival_time",
+              "feature_value": -0.14486758410930634,
+              "contribution": 0.025758638104411063,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_length",
+              "feature_value": -0.17951874434947968,
+              "contribution": 0.01964287581832328,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "packet_rate",
+              "feature_value": 0.1791614592075348,
+              "contribution": 0.01427951412483167,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "protocol_distribution",
+              "feature_value": 0.3756944239139557,
+              "contribution": 0.01239813032107125,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "dns_query_frequency",
+              "feature_value": -0.13912995159626007,
+              "contribution": 0.0055578244132887195,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_type_distribution",
+              "feature_value": -0.6077567338943481,
+              "contribution": 0.004762275518838374,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "dns_response_activity",
+              "feature_value": -0.03422252833843231,
+              "contribution": 0.002576151960021382,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_rate",
+              "feature_value": -0.3852342963218689,
+              "contribution": 3.8950258529363924e-05,
+              "direction": "supports_prediction"
+            }
+          ]
+        },
+        "lime": {
+          "predicted_class": "Normal",
+          "confidence": 0.28008564707150546,
+          "top_features": [
+            {
+              "feature": "packet_rate",
+              "feature_value": 0.1791614592075348,
+              "contribution": 0.09105873579933191,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_type_distribution",
+              "feature_value": -0.6077567338943481,
+              "contribution": 0.05233950018821063,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "packet_size",
+              "feature_value": -0.34040799736976624,
+              "contribution": 0.04974368286931309,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "dns_query_frequency",
+              "feature_value": -0.13912995159626007,
+              "contribution": 0.03621021071656676,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_length",
+              "feature_value": -0.17951874434947968,
+              "contribution": 0.029638539834379744,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "protocol_distribution",
+              "feature_value": 0.3756944239139557,
+              "contribution": 0.027349480809432468,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "flow_duration",
+              "feature_value": -0.21009914577007294,
+              "contribution": -0.020393960416610735,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "dns_response_activity",
+              "feature_value": -0.03422252833843231,
+              "contribution": 0.005927724334303614,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "inter_arrival_time",
+              "feature_value": -0.14486758410930634,
+              "contribution": 0.0031397336512438926,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_rate",
+              "feature_value": -0.3852342963218689,
+              "contribution": -0.0023124112122629528,
+              "direction": "opposes_prediction"
+            }
+          ]
+        },
+        "interpretation": "SHAP and LIME provide local model explanations. They describe feature contributions to the prediction and should not be interpreted as causal evidence."
       },
-      "mitre_attack": {
-        "candidate_techniques": [],
+      "mitre": {
+        "mappings": [],
         "analyst_guidance": [],
-        "mapping_policy": "ATT&CK techniques are candidate mappings based on flow-level evidence and require corroborating host, application, authentication, or other telemetry before being treated as confirmed."
+        "mapping_policy": "ATT&CK mappings are candidate mappings based on flow-level evidence and require additional telemetry for confirmation."
       },
       "recommended_actions": [
-        "Keep the event under monitoring and collect additional evidence if available.",
-        "Investigate the classifier disagreement before assigning a definitive attack category.",
-        "Review SHAP and LIME explanations to understand which input features influenced the model decision."
+        "Treat the event as informational unless additional evidence increases its priority.",
+        "Use additional telemetry because classifier disagreement reduces confidence in the exact threat category."
       ],
       "limitations": [
-        "The investigation uses flow-level evidence derived from UNSW-NB15.",
-        "DNS features are DNS-derived flow proxies, not raw DNS packet-level features.",
-        "Isolation Forest identifies deviation from learned normal traffic and does not prove maliciousness.",
-        "SHAP and LIME describe model behavior and should not be interpreted as causal explanations.",
-        "MITRE ATT&CK mappings are candidate mappings and require corroborating telemetry.",
-        "Agent confidence is an evidence-strength indicator, not an attack probability."
+        "The investigation agent operates on flow-level network features and does not have direct host, process, authentication, or packet-payload telemetry.",
+        "Isolation Forest anomaly detection indicates deviation from learned normal traffic and does not by itself prove malicious activity.",
+        "SHAP and LIME describe model behavior and feature contribution; they do not establish causal relationships.",
+        "MITRE ATT&CK mappings are candidate mappings and require corroborating telemetry before being treated as confirmed techniques.",
+        "Agent confidence represents evidence strength and consistency, not attack probability."
       ]
     },
     {
       "agent": {
         "name": "CyberAgent Investigation Agent",
         "version": "1.0.0",
-        "reasoning_type": "evidence-grounded"
+        "type": "Evidence-grounded investigation agent"
       },
       "investigation_verdict": {
-        "verdict": "Potential malicious activity detected, but the exact threat category is uncertain. Classifier disagreement reduces confidence in the exact attack category.",
+        "verdict": "Potential malicious activity was detected, but the exact threat category is uncertain. Classifier disagreement reduces confidence in the exact attack category.",
         "threat_class": "Normal",
-        "severity": "Unknown",
-        "confidence_level": "Very Low",
-        "confidence_score": 18.64
+        "severity": {
+          "level": "Informational",
+          "score": 8.66
+        },
+        "confidence": {
+          "score": 18.64,
+          "level": "Very Low",
+          "interpretation": "Agent confidence represents the strength and consistency of the available evidence. It is not an attack probability."
+        }
       },
       "threat_class": "Normal",
       "severity": {
-        "level": "Unknown",
-        "score": null
+        "level": "Informational",
+        "score": 8.66
       },
       "agent_confidence": {
         "score": 18.64,
         "level": "Very Low",
-        "basis": [
-          "binary detector confidence",
-          "Random Forest confidence",
-          "Two-Stream confidence",
-          "overall evidence strength"
-        ],
-        "note": "Agent confidence reflects agreement and strength of available evidence. It is not a probability that the attack occurred."
+        "interpretation": "Agent confidence represents the strength and consistency of the available evidence. It is not an attack probability."
+      },
+      "confidence": {
+        "score": 18.64,
+        "level": "Very Low",
+        "interpretation": "Agent confidence represents the strength and consistency of the available evidence. It is not an attack probability."
       },
       "key_findings": [
-        "The binary detector identified the traffic as an attack with an attack probability of 45.06%.",
+        "Binary detection classified the traffic as attack activity with 45.06% attack probability.",
         "Random Forest predicted Normal with 20.00% confidence.",
-        "Two-Stream predicted Exploits with 40.85% confidence.",
+        "Two-Stream model predicted Exploits with 40.85% confidence.",
+        "The supervised classifiers disagree on the specific threat category.",
         "Isolation Forest did not flag the sample as anomalous.",
-        "The supervised classifiers disagree on the specific attack class.",
-        "Overall evidence strength is Low.",
-        "The investigation is currently centered on the Normal threat category."
+        "Overall evidence strength is Low (40/100)."
+      ],
+      "findings": [
+        "Binary detection classified the traffic as attack activity with 45.06% attack probability.",
+        "Random Forest predicted Normal with 20.00% confidence.",
+        "Two-Stream model predicted Exploits with 40.85% confidence.",
+        "The supervised classifiers disagree on the specific threat category.",
+        "Isolation Forest did not flag the sample as anomalous.",
+        "Overall evidence strength is Low (40/100)."
       ],
       "reasoning": [
-        "Step 1: The binary detection stage provides evidence that the traffic is potentially malicious.",
-        "Step 2: The supervised classifiers provide different attack-class predictions, reducing confidence in the exact threat category.",
-        "Step 3: Isolation Forest does not identify the sample as anomalous, so anomaly evidence is absent.",
-        "Step 4: The combined evidence strength is Low.",
-        "Step 5: The current investigation priority is Unknown for the Normal category."
+        "The binary detector provides evidence that the traffic may represent malicious activity.",
+        "The supervised classifiers produce different threat categories, reducing confidence in the exact attack classification.",
+        "Isolation Forest does not independently support the presence of an anomaly.",
+        "The overall evidence strength is low, so the investigation result should be treated as preliminary."
       ],
       "explainability": {
-        "shap": {},
-        "lime": {}
+        "shap": {
+          "predicted_class": "Normal",
+          "confidence": 0.2,
+          "top_features": [
+            {
+              "feature": "packet_size",
+              "feature_value": -0.16587583720684052,
+              "contribution": 0.12491421088774463,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "packet_rate",
+              "feature_value": -0.5768156051635742,
+              "contribution": -0.10486542030329289,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "protocol_distribution",
+              "feature_value": 0.062138769775629044,
+              "contribution": 0.03162530438066319,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "inter_arrival_time",
+              "feature_value": -0.10975257307291031,
+              "contribution": 0.028908462949866254,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "flow_duration",
+              "feature_value": 0.3174178898334503,
+              "contribution": 0.009921376306037843,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "dns_query_frequency",
+              "feature_value": -0.13912995159626007,
+              "contribution": 0.004636782079341883,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_type_distribution",
+              "feature_value": -0.6077567338943481,
+              "contribution": 0.003486247611128732,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "dns_response_activity",
+              "feature_value": -0.03422252833843231,
+              "contribution": 0.0015642822443403385,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_length",
+              "feature_value": 0.05327878147363663,
+              "contribution": -0.00021559231353328906,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "query_rate",
+              "feature_value": -0.3852342963218689,
+              "contribution": 5.4756871994168606e-05,
+              "direction": "supports_prediction"
+            }
+          ]
+        },
+        "lime": {
+          "predicted_class": "Normal",
+          "confidence": 0.2,
+          "top_features": [
+            {
+              "feature": "packet_size",
+              "feature_value": -0.16587583720684052,
+              "contribution": -0.1096457871617393,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "packet_rate",
+              "feature_value": -0.5768156051635742,
+              "contribution": -0.062173115443961126,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "query_type_distribution",
+              "feature_value": -0.6077567338943481,
+              "contribution": 0.04403157207832736,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "dns_response_activity",
+              "feature_value": -0.03422252833843231,
+              "contribution": 0.04137663695924991,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "protocol_distribution",
+              "feature_value": 0.062138769775629044,
+              "contribution": -0.03450571247908722,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "dns_query_frequency",
+              "feature_value": -0.13912995159626007,
+              "contribution": 0.027307011829411604,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "query_length",
+              "feature_value": 0.05327878147363663,
+              "contribution": -0.02336143224381379,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "flow_duration",
+              "feature_value": 0.3174178898334503,
+              "contribution": 0.011037390078069191,
+              "direction": "supports_prediction"
+            },
+            {
+              "feature": "inter_arrival_time",
+              "feature_value": -0.10975257307291031,
+              "contribution": -0.010966976955190505,
+              "direction": "opposes_prediction"
+            },
+            {
+              "feature": "query_rate",
+              "feature_value": -0.3852342963218689,
+              "contribution": 0.004417295919372115,
+              "direction": "supports_prediction"
+            }
+          ]
+        },
+        "interpretation": "SHAP and LIME provide local model explanations. They describe feature contributions to the prediction and should not be interpreted as causal evidence."
       },
-      "mitre_attack": {
-        "candidate_techniques": [],
+      "mitre": {
+        "mappings": [],
         "analyst_guidance": [],
-        "mapping_policy": "ATT&CK techniques are candidate mappings based on flow-level evidence and require corroborating host, application, authentication, or other telemetry before being treated as confirmed."
+        "mapping_policy": "ATT&CK mappings are candidate mappings based on flow-level evidence and require additional telemetry for confirmation."
       },
       "recommended_actions": [
-        "Keep the event under monitoring and collect additional evidence if available.",
-        "Investigate the classifier disagreement before assigning a definitive attack category.",
-        "Review SHAP and LIME explanations to understand which input features influenced the model decision."
+        "Treat the event as informational unless additional evidence increases its priority.",
+        "Use additional telemetry because classifier disagreement reduces confidence in the exact threat category."
       ],
       "limitations": [
-        "The investigation uses flow-level evidence derived from UNSW-NB15.",
-        "DNS features are DNS-derived flow proxies, not raw DNS packet-level features.",
-        "Isolation Forest identifies deviation from learned normal traffic and does not prove maliciousness.",
-        "SHAP and LIME describe model behavior and should not be interpreted as causal explanations.",
-        "MITRE ATT&CK mappings are candidate mappings and require corroborating telemetry.",
-        "Agent confidence is an evidence-strength indicator, not an attack probability."
+        "The investigation agent operates on flow-level network features and does not have direct host, process, authentication, or packet-payload telemetry.",
+        "Isolation Forest anomaly detection indicates deviation from learned normal traffic and does not by itself prove malicious activity.",
+        "SHAP and LIME describe model behavior and feature contribution; they do not establish causal relationships.",
+        "MITRE ATT&CK mappings are candidate mappings and require corroborating telemetry before being treated as confirmed techniques.",
+        "Agent confidence represents evidence strength and consistency, not attack probability."
       ]
     }
   ]

@@ -142,7 +142,7 @@
             },
             "lime": {
                 "predicted_class": "Normal",
-                "confidence": 0.17167076726945513,
+                "confidence": 0.1716707672694551,
                 "top_features": [
                     {
                         "feature": "packet_size",
@@ -183,7 +183,7 @@
                     {
                         "feature": "protocol_distribution",
                         "feature_value": 0.33090075850486755,
-                        "contribution": 0.01900095354486132,
+                        "contribution": 0.019000953544861324,
                         "direction": "supports_prediction"
                     },
                     {
@@ -195,13 +195,13 @@
                     {
                         "feature": "inter_arrival_time",
                         "feature_value": -0.1448671817779541,
-                        "contribution": -0.0030228522383703034,
+                        "contribution": -0.0030228522383703026,
                         "direction": "opposes_prediction"
                     },
                     {
                         "feature": "query_rate",
                         "feature_value": -0.3852342963218689,
-                        "contribution": -0.0013316410604901701,
+                        "contribution": -0.0013316410604901714,
                         "direction": "opposes_prediction"
                     }
                 ]
@@ -369,7 +369,7 @@
             },
             "lime": {
                 "predicted_class": "Generic",
-                "confidence": 0.27376778776778776,
+                "confidence": 0.2737677877677877,
                 "top_features": [
                     {
                         "feature": "query_type_distribution",
@@ -386,7 +386,7 @@
                     {
                         "feature": "packet_size",
                         "feature_value": -0.5960098505020142,
-                        "contribution": 0.05444882029204776,
+                        "contribution": 0.054448820292047756,
                         "direction": "supports_prediction"
                     },
                     {
@@ -410,13 +410,13 @@
                     {
                         "feature": "packet_rate",
                         "feature_value": -0.5769060254096985,
-                        "contribution": -0.010156912030098941,
+                        "contribution": -0.01015691203009894,
                         "direction": "opposes_prediction"
                     },
                     {
                         "feature": "query_length",
                         "feature_value": -0.44826552271842957,
-                        "contribution": -0.006994905759995361,
+                        "contribution": -0.0069949057599953636,
                         "direction": "opposes_prediction"
                     },
                     {
@@ -428,7 +428,7 @@
                     {
                         "feature": "query_rate",
                         "feature_value": -0.3852342963218689,
-                        "contribution": -0.003985600782566943,
+                        "contribution": -0.003985600782566944,
                         "direction": "opposes_prediction"
                     }
                 ]
@@ -625,7 +625,7 @@
                     {
                         "feature": "packet_rate",
                         "feature_value": -0.5766318440437317,
-                        "contribution": -0.02932817825831561,
+                        "contribution": -0.029328178258315612,
                         "direction": "opposes_prediction"
                     },
                     {
@@ -649,13 +649,13 @@
                     {
                         "feature": "protocol_distribution",
                         "feature_value": 0.062138769775629044,
-                        "contribution": 0.003927332836625722,
+                        "contribution": 0.003927332836625723,
                         "direction": "supports_prediction"
                     },
                     {
                         "feature": "inter_arrival_time",
                         "feature_value": -0.13275399804115295,
-                        "contribution": -0.0034344552175082405,
+                        "contribution": -0.00343445521750824,
                         "direction": "opposes_prediction"
                     }
                 ]
@@ -719,7 +719,7 @@
                     },
                     {
                         "class": "Exploits",
-                        "probability": 0.13323591944610255
+                        "probability": 0.13323591944610252
                     }
                 ]
             },
@@ -1091,7 +1091,7 @@
                     {
                         "feature": "query_length",
                         "feature_value": 0.05327878147363663,
-                        "contribution": -0.023361432243813787,
+                        "contribution": -0.02336143224381379,
                         "direction": "opposes_prediction"
                     },
                     {
@@ -1103,7 +1103,7 @@
                     {
                         "feature": "inter_arrival_time",
                         "feature_value": -0.10975257307291031,
-                        "contribution": -0.010966976955190506,
+                        "contribution": -0.010966976955190505,
                         "direction": "opposes_prediction"
                     },
                     {
