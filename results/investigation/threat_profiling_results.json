@@ -1,0 +1,240 @@
+{
+    "system": "CyberAgent",
+    "phase": "Threat Profiling and Severity Engine",
+    "description": "Threat profiling and transparent severity assessment generated from existing ML investigation evidence.",
+    "samples_analyzed": 5,
+    "results": [
+        {
+            "sample_number": 0,
+            "threat_profile": {
+                "predicted_threat": "Normal",
+                "threat_category": "Benign Traffic",
+                "threat_description": "Traffic classified as normal or non-malicious by the multiclass classifier.",
+                "behavior": "Normal network behavior",
+                "base_priority": "Low",
+                "binary_detection": {
+                    "prediction": "Attack",
+                    "attack_probability": 0.7393220663070679
+                },
+                "classifier_assessment": {
+                    "random_forest_class": "Normal",
+                    "random_forest_confidence": 0.1716707672694551,
+                    "two_stream_class": "Shellcode",
+                    "two_stream_confidence": 0.8003091812133789
+                },
+                "anomaly_assessment": {
+                    "is_anomaly": false,
+                    "anomaly_score": 0.03664111337986592
+                },
+                "model_consistency": {
+                    "status": "Disagreement",
+                    "model_disagreement": true
+                },
+                "evidence_strength": {
+                    "score": 50,
+                    "level": "Low"
+                },
+                "investigation_focus": [
+                    "Verify whether the traffic is expected",
+                    "Check for disagreement between binary and multiclass models"
+                ]
+            },
+            "severity_assessment": {
+                "threat_class": "Normal",
+                "severity_score": 12.94,
+                "severity_level": "Informational",
+                "score_interpretation": "This score represents investigation priority based on available evidence. It is not an attack probability.",
+                "recommendations": [
+                    "Review the source and destination communication associated with the event.",
+                    "Review the disagreement between the supervised classifiers before taking a definitive action."
+                ]
+            }
+        },
+        {
+            "sample_number": 1,
+            "threat_profile": {
+                "predicted_threat": "Generic",
+                "threat_category": "Generic Attack",
+                "threat_description": "A broad attack pattern that does not correspond to a more specific attack category.",
+                "behavior": "Generic malicious network activity",
+                "base_priority": "Medium",
+                "binary_detection": {
+                    "prediction": "Attack",
+                    "attack_probability": 0.5066615343093872
+                },
+                "classifier_assessment": {
+                    "random_forest_class": "Generic",
+                    "random_forest_confidence": 0.27376778776778776,
+                    "two_stream_class": "Fuzzers",
+                    "two_stream_confidence": 0.3799581527709961
+                },
+                "anomaly_assessment": {
+                    "is_anomaly": false,
+                    "anomaly_score": 0.06696332341694283
+                },
+                "model_consistency": {
+                    "status": "Disagreement",
+                    "model_disagreement": true
+                },
+                "evidence_strength": {
+                    "score": 30,
+                    "level": "Low"
+                },
+                "investigation_focus": [
+                    "Review source and destination behavior",
+                    "Check repeated or unusual connection patterns",
+                    "Compare with historical traffic"
+                ]
+            },
+            "severity_assessment": {
+                "threat_class": "Generic",
+                "severity_score": 27.5,
+                "severity_level": "Low",
+                "score_interpretation": "This score represents investigation priority based on available evidence. It is not an attack probability.",
+                "recommendations": [
+                    "Review the source and destination communication associated with the event.",
+                    "Review the disagreement between the supervised classifiers before taking a definitive action."
+                ]
+            }
+        },
+        {
+            "sample_number": 2,
+            "threat_profile": {
+                "predicted_threat": "Exploits",
+                "threat_category": "Exploitation",
+                "threat_description": "Traffic associated with attempts to exploit vulnerabilities or abnormal application behavior.",
+                "behavior": "Possible vulnerability exploitation",
+                "base_priority": "High",
+                "binary_detection": {
+                    "prediction": "Attack",
+                    "attack_probability": 0.46469196677207947
+                },
+                "classifier_assessment": {
+                    "random_forest_class": "Exploits",
+                    "random_forest_confidence": 0.18017516420361246,
+                    "two_stream_class": "Exploits",
+                    "two_stream_confidence": 0.45093148946762085
+                },
+                "anomaly_assessment": {
+                    "is_anomaly": false,
+                    "anomaly_score": 0.13750702815825822
+                },
+                "model_consistency": {
+                    "status": "Agreement",
+                    "model_disagreement": false
+                },
+                "evidence_strength": {
+                    "score": 55,
+                    "level": "Low"
+                },
+                "investigation_focus": [
+                    "Identify targeted service",
+                    "Check for repeated exploitation attempts",
+                    "Review affected host activity"
+                ]
+            },
+            "severity_assessment": {
+                "threat_class": "Exploits",
+                "severity_score": 50.95,
+                "severity_level": "Medium",
+                "score_interpretation": "This score represents investigation priority based on available evidence. It is not an attack probability.",
+                "recommendations": [
+                    "Review the source and destination communication associated with the event.",
+                    "Investigate the targeted service for possible vulnerability exploitation."
+                ]
+            }
+        },
+        {
+            "sample_number": 3,
+            "threat_profile": {
+                "predicted_threat": "Normal",
+                "threat_category": "Benign Traffic",
+                "threat_description": "Traffic classified as normal or non-malicious by the multiclass classifier.",
+                "behavior": "Normal network behavior",
+                "base_priority": "Low",
+                "binary_detection": {
+                    "prediction": "Attack",
+                    "attack_probability": 0.9851340055465698
+                },
+                "classifier_assessment": {
+                    "random_forest_class": "Normal",
+                    "random_forest_confidence": 0.28008564707150546,
+                    "two_stream_class": "Analysis",
+                    "two_stream_confidence": 0.2600017189979553
+                },
+                "anomaly_assessment": {
+                    "is_anomaly": false,
+                    "anomaly_score": 0.08854171785704607
+                },
+                "model_consistency": {
+                    "status": "Disagreement",
+                    "model_disagreement": true
+                },
+                "evidence_strength": {
+                    "score": 30,
+                    "level": "Low"
+                },
+                "investigation_focus": [
+                    "Verify whether the traffic is expected",
+                    "Check for disagreement between binary and multiclass models"
+                ]
+            },
+            "severity_assessment": {
+                "threat_class": "Normal",
+                "severity_score": 11.66,
+                "severity_level": "Informational",
+                "score_interpretation": "This score represents investigation priority based on available evidence. It is not an attack probability.",
+                "recommendations": [
+                    "Review the source and destination communication associated with the event.",
+                    "Review the disagreement between the supervised classifiers before taking a definitive action."
+                ]
+            }
+        },
+        {
+            "sample_number": 4,
+            "threat_profile": {
+                "predicted_threat": "Normal",
+                "threat_category": "Benign Traffic",
+                "threat_description": "Traffic classified as normal or non-malicious by the multiclass classifier.",
+                "behavior": "Normal network behavior",
+                "base_priority": "Low",
+                "binary_detection": {
+                    "prediction": "Attack",
+                    "attack_probability": 0.4506034255027771
+                },
+                "classifier_assessment": {
+                    "random_forest_class": "Normal",
+                    "random_forest_confidence": 0.2,
+                    "two_stream_class": "Exploits",
+                    "two_stream_confidence": 0.4084562361240387
+                },
+                "anomaly_assessment": {
+                    "is_anomaly": false,
+                    "anomaly_score": 0.12683001356860218
+                },
+                "model_consistency": {
+                    "status": "Disagreement",
+                    "model_disagreement": true
+                },
+                "evidence_strength": {
+                    "score": 40,
+                    "level": "Low"
+                },
+                "investigation_focus": [
+                    "Verify whether the traffic is expected",
+                    "Check for disagreement between binary and multiclass models"
+                ]
+            },
+            "severity_assessment": {
+                "threat_class": "Normal",
+                "severity_score": 8.66,
+                "severity_level": "Informational",
+                "score_interpretation": "This score represents investigation priority based on available evidence. It is not an attack probability.",
+                "recommendations": [
+                    "Review the source and destination communication associated with the event.",
+                    "Review the disagreement between the supervised classifiers before taking a definitive action."
+                ]
+            }
+        }
+    ]
+}
