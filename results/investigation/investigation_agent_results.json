@@ -1,0 +1,351 @@
+{
+  "agent": {
+    "name": "CyberAgent Investigation Agent",
+    "version": "1.0.0"
+  },
+  "investigation_count": 5,
+  "results": [
+    {
+      "agent": {
+        "name": "CyberAgent Investigation Agent",
+        "version": "1.0.0",
+        "reasoning_type": "evidence-grounded"
+      },
+      "investigation_verdict": {
+        "verdict": "Potential malicious activity detected, but the exact threat category is uncertain. Classifier disagreement reduces confidence in the exact attack category.",
+        "threat_class": "Normal",
+        "severity": "Unknown",
+        "confidence_level": "Very Low",
+        "confidence_score": 36.41
+      },
+      "threat_class": "Normal",
+      "severity": {
+        "level": "Unknown",
+        "score": null
+      },
+      "agent_confidence": {
+        "score": 36.41,
+        "level": "Very Low",
+        "basis": [
+          "binary detector confidence",
+          "Random Forest confidence",
+          "Two-Stream confidence",
+          "overall evidence strength"
+        ],
+        "note": "Agent confidence reflects agreement and strength of available evidence. It is not a probability that the attack occurred."
+      },
+      "key_findings": [
+        "The binary detector identified the traffic as an attack with an attack probability of 73.93%.",
+        "Random Forest predicted Normal with 17.17% confidence.",
+        "Two-Stream predicted Shellcode with 80.03% confidence.",
+        "Isolation Forest did not flag the sample as anomalous.",
+        "The supervised classifiers disagree on the specific attack class.",
+        "Overall evidence strength is Low.",
+        "The investigation is currently centered on the Normal threat category."
+      ],
+      "reasoning": [
+        "Step 1: The binary detection stage provides evidence that the traffic is potentially malicious.",
+        "Step 2: The supervised classifiers provide different attack-class predictions, reducing confidence in the exact threat category.",
+        "Step 3: Isolation Forest does not identify the sample as anomalous, so anomaly evidence is absent.",
+        "Step 4: The combined evidence strength is Low.",
+        "Step 5: The current investigation priority is Unknown for the Normal category."
+      ],
+      "explainability": {
+        "shap": {},
+        "lime": {}
+      },
+      "mitre_attack": {
+        "candidate_techniques": [],
+        "analyst_guidance": [],
+        "mapping_policy": "ATT&CK techniques are candidate mappings based on flow-level evidence and require corroborating host, application, authentication, or other telemetry before being treated as confirmed."
+      },
+      "recommended_actions": [
+        "Keep the event under monitoring and collect additional evidence if available.",
+        "Investigate the classifier disagreement before assigning a definitive attack category.",
+        "Review SHAP and LIME explanations to understand which input features influenced the model decision."
+      ],
+      "limitations": [
+        "The investigation uses flow-level evidence derived from UNSW-NB15.",
+        "DNS features are DNS-derived flow proxies, not raw DNS packet-level features.",
+        "Isolation Forest identifies deviation from learned normal traffic and does not prove maliciousness.",
+        "SHAP and LIME describe model behavior and should not be interpreted as causal explanations.",
+        "MITRE ATT&CK mappings are candidate mappings and require corroborating telemetry.",
+        "Agent confidence is an evidence-strength indicator, not an attack probability."
+      ]
+    },
+    {
+      "agent": {
+        "name": "CyberAgent Investigation Agent",
+        "version": "1.0.0",
+        "reasoning_type": "evidence-grounded"
+      },
+      "investigation_verdict": {
+        "verdict": "Potential Generic activity requires investigation. Classifier disagreement reduces confidence in the exact attack category.",
+        "threat_class": "Generic",
+        "severity": "Unknown",
+        "confidence_level": "Very Low",
+        "confidence_score": 16.41
+      },
+      "threat_class": "Generic",
+      "severity": {
+        "level": "Unknown",
+        "score": null
+      },
+      "agent_confidence": {
+        "score": 16.41,
+        "level": "Very Low",
+        "basis": [
+          "binary detector confidence",
+          "Random Forest confidence",
+          "Two-Stream confidence",
+          "overall evidence strength"
+        ],
+        "note": "Agent confidence reflects agreement and strength of available evidence. It is not a probability that the attack occurred."
+      },
+      "key_findings": [
+        "The binary detector identified the traffic as an attack with an attack probability of 50.67%.",
+        "Random Forest predicted Generic with 27.38% confidence.",
+        "Two-Stream predicted Fuzzers with 38.00% confidence.",
+        "Isolation Forest did not flag the sample as anomalous.",
+        "The supervised classifiers disagree on the specific attack class.",
+        "Overall evidence strength is Low.",
+        "The investigation is currently centered on the Generic threat category."
+      ],
+      "reasoning": [
+        "Step 1: The binary detection stage provides evidence that the traffic is potentially malicious.",
+        "Step 2: The supervised classifiers provide different attack-class predictions, reducing confidence in the exact threat category.",
+        "Step 3: Isolation Forest does not identify the sample as anomalous, so anomaly evidence is absent.",
+        "Step 4: The combined evidence strength is Low.",
+        "Step 5: The current investigation priority is Unknown for the Generic category."
+      ],
+      "explainability": {
+        "shap": {},
+        "lime": {}
+      },
+      "mitre_attack": {
+        "candidate_techniques": [],
+        "analyst_guidance": [],
+        "mapping_policy": "ATT&CK techniques are candidate mappings based on flow-level evidence and require corroborating host, application, authentication, or other telemetry before being treated as confirmed."
+      },
+      "recommended_actions": [
+        "Keep the event under monitoring and collect additional evidence if available.",
+        "Investigate the classifier disagreement before assigning a definitive attack category.",
+        "Correlate the predicted threat category with host, application, authentication, and network logs.",
+        "Review SHAP and LIME explanations to understand which input features influenced the model decision."
+      ],
+      "limitations": [
+        "The investigation uses flow-level evidence derived from UNSW-NB15.",
+        "DNS features are DNS-derived flow proxies, not raw DNS packet-level features.",
+        "Isolation Forest identifies deviation from learned normal traffic and does not prove maliciousness.",
+        "SHAP and LIME describe model behavior and should not be interpreted as causal explanations.",
+        "MITRE ATT&CK mappings are candidate mappings and require corroborating telemetry.",
+        "Agent confidence is an evidence-strength indicator, not an attack probability."
+      ]
+    },
+    {
+      "agent": {
+        "name": "CyberAgent Investigation Agent",
+        "version": "1.0.0",
+        "reasoning_type": "evidence-grounded"
+      },
+      "investigation_verdict": {
+        "verdict": "Potential Exploits activity requires investigation.",
+        "threat_class": "Exploits",
+        "severity": "Unknown",
+        "confidence_level": "Very Low",
+        "confidence_score": 34.89
+      },
+      "threat_class": "Exploits",
+      "severity": {
+        "level": "Unknown",
+        "score": null
+      },
+      "agent_confidence": {
+        "score": 34.89,
+        "level": "Very Low",
+        "basis": [
+          "binary detector confidence",
+          "Random Forest confidence",
+          "Two-Stream confidence",
+          "classifier agreement",
+          "overall evidence strength"
+        ],
+        "note": "Agent confidence reflects agreement and strength of available evidence. It is not a probability that the attack occurred."
+      },
+      "key_findings": [
+        "The binary detector identified the traffic as an attack with an attack probability of 46.47%.",
+        "Random Forest predicted Exploits with 18.02% confidence.",
+        "Two-Stream predicted Exploits with 45.09% confidence.",
+        "Isolation Forest did not flag the sample as anomalous.",
+        "The supervised classifiers agree on the predicted attack class.",
+        "Overall evidence strength is Low.",
+        "The investigation is currently centered on the Exploits threat category."
+      ],
+      "reasoning": [
+        "Step 1: The binary detection stage provides evidence that the traffic is potentially malicious.",
+        "Step 2: Random Forest and Two-Stream both support the Exploits classification.",
+        "Step 3: Isolation Forest does not identify the sample as anomalous, so anomaly evidence is absent.",
+        "Step 4: The combined evidence strength is Low.",
+        "Step 5: The current investigation priority is Unknown for the Exploits category."
+      ],
+      "explainability": {
+        "shap": {},
+        "lime": {}
+      },
+      "mitre_attack": {
+        "candidate_techniques": [],
+        "analyst_guidance": [],
+        "mapping_policy": "ATT&CK techniques are candidate mappings based on flow-level evidence and require corroborating host, application, authentication, or other telemetry before being treated as confirmed."
+      },
+      "recommended_actions": [
+        "Keep the event under monitoring and collect additional evidence if available.",
+        "Correlate the predicted threat category with host, application, authentication, and network logs.",
+        "Review SHAP and LIME explanations to understand which input features influenced the model decision."
+      ],
+      "limitations": [
+        "The investigation uses flow-level evidence derived from UNSW-NB15.",
+        "DNS features are DNS-derived flow proxies, not raw DNS packet-level features.",
+        "Isolation Forest identifies deviation from learned normal traffic and does not prove maliciousness.",
+        "SHAP and LIME describe model behavior and should not be interpreted as causal explanations.",
+        "MITRE ATT&CK mappings are candidate mappings and require corroborating telemetry.",
+        "Agent confidence is an evidence-strength indicator, not an attack probability."
+      ]
+    },
+    {
+      "agent": {
+        "name": "CyberAgent Investigation Agent",
+        "version": "1.0.0",
+        "reasoning_type": "evidence-grounded"
+      },
+      "investigation_verdict": {
+        "verdict": "Potential malicious activity detected, but the exact threat category is uncertain. Classifier disagreement reduces confidence in the exact attack category.",
+        "threat_class": "Normal",
+        "severity": "Unknown",
+        "confidence_level": "Very Low",
+        "confidence_score": 38.06
+      },
+      "threat_class": "Normal",
+      "severity": {
+        "level": "Unknown",
+        "score": null
+      },
+      "agent_confidence": {
+        "score": 38.06,
+        "level": "Very Low",
+        "basis": [
+          "binary detector confidence",
+          "Random Forest confidence",
+          "Two-Stream confidence",
+          "overall evidence strength"
+        ],
+        "note": "Agent confidence reflects agreement and strength of available evidence. It is not a probability that the attack occurred."
+      },
+      "key_findings": [
+        "The binary detector identified the traffic as an attack with an attack probability of 98.51%.",
+        "Random Forest predicted Normal with 28.01% confidence.",
+        "Two-Stream predicted Analysis with 26.00% confidence.",
+        "Isolation Forest did not flag the sample as anomalous.",
+        "The supervised classifiers disagree on the specific attack class.",
+        "Overall evidence strength is Low.",
+        "The investigation is currently centered on the Normal threat category."
+      ],
+      "reasoning": [
+        "Step 1: The binary detection stage provides evidence that the traffic is potentially malicious.",
+        "Step 2: The supervised classifiers provide different attack-class predictions, reducing confidence in the exact threat category.",
+        "Step 3: Isolation Forest does not identify the sample as anomalous, so anomaly evidence is absent.",
+        "Step 4: The combined evidence strength is Low.",
+        "Step 5: The current investigation priority is Unknown for the Normal category."
+      ],
+      "explainability": {
+        "shap": {},
+        "lime": {}
+      },
+      "mitre_attack": {
+        "candidate_techniques": [],
+        "analyst_guidance": [],
+        "mapping_policy": "ATT&CK techniques are candidate mappings based on flow-level evidence and require corroborating host, application, authentication, or other telemetry before being treated as confirmed."
+      },
+      "recommended_actions": [
+        "Keep the event under monitoring and collect additional evidence if available.",
+        "Investigate the classifier disagreement before assigning a definitive attack category.",
+        "Review SHAP and LIME explanations to understand which input features influenced the model decision."
+      ],
+      "limitations": [
+        "The investigation uses flow-level evidence derived from UNSW-NB15.",
+        "DNS features are DNS-derived flow proxies, not raw DNS packet-level features.",
+        "Isolation Forest identifies deviation from learned normal traffic and does not prove maliciousness.",
+        "SHAP and LIME describe model behavior and should not be interpreted as causal explanations.",
+        "MITRE ATT&CK mappings are candidate mappings and require corroborating telemetry.",
+        "Agent confidence is an evidence-strength indicator, not an attack probability."
+      ]
+    },
+    {
+      "agent": {
+        "name": "CyberAgent Investigation Agent",
+        "version": "1.0.0",
+        "reasoning_type": "evidence-grounded"
+      },
+      "investigation_verdict": {
+        "verdict": "Potential malicious activity detected, but the exact threat category is uncertain. Classifier disagreement reduces confidence in the exact attack category.",
+        "threat_class": "Normal",
+        "severity": "Unknown",
+        "confidence_level": "Very Low",
+        "confidence_score": 18.64
+      },
+      "threat_class": "Normal",
+      "severity": {
+        "level": "Unknown",
+        "score": null
+      },
+      "agent_confidence": {
+        "score": 18.64,
+        "level": "Very Low",
+        "basis": [
+          "binary detector confidence",
+          "Random Forest confidence",
+          "Two-Stream confidence",
+          "overall evidence strength"
+        ],
+        "note": "Agent confidence reflects agreement and strength of available evidence. It is not a probability that the attack occurred."
+      },
+      "key_findings": [
+        "The binary detector identified the traffic as an attack with an attack probability of 45.06%.",
+        "Random Forest predicted Normal with 20.00% confidence.",
+        "Two-Stream predicted Exploits with 40.85% confidence.",
+        "Isolation Forest did not flag the sample as anomalous.",
+        "The supervised classifiers disagree on the specific attack class.",
+        "Overall evidence strength is Low.",
+        "The investigation is currently centered on the Normal threat category."
+      ],
+      "reasoning": [
+        "Step 1: The binary detection stage provides evidence that the traffic is potentially malicious.",
+        "Step 2: The supervised classifiers provide different attack-class predictions, reducing confidence in the exact threat category.",
+        "Step 3: Isolation Forest does not identify the sample as anomalous, so anomaly evidence is absent.",
+        "Step 4: The combined evidence strength is Low.",
+        "Step 5: The current investigation priority is Unknown for the Normal category."
+      ],
+      "explainability": {
+        "shap": {},
+        "lime": {}
+      },
+      "mitre_attack": {
+        "candidate_techniques": [],
+        "analyst_guidance": [],
+        "mapping_policy": "ATT&CK techniques are candidate mappings based on flow-level evidence and require corroborating host, application, authentication, or other telemetry before being treated as confirmed."
+      },
+      "recommended_actions": [
+        "Keep the event under monitoring and collect additional evidence if available.",
+        "Investigate the classifier disagreement before assigning a definitive attack category.",
+        "Review SHAP and LIME explanations to understand which input features influenced the model decision."
+      ],
+      "limitations": [
+        "The investigation uses flow-level evidence derived from UNSW-NB15.",
+        "DNS features are DNS-derived flow proxies, not raw DNS packet-level features.",
+        "Isolation Forest identifies deviation from learned normal traffic and does not prove maliciousness.",
+        "SHAP and LIME describe model behavior and should not be interpreted as causal explanations.",
+        "MITRE ATT&CK mappings are candidate mappings and require corroborating telemetry.",
+        "Agent confidence is an evidence-strength indicator, not an attack probability."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,145 @@
+======================================================================
+CYBERAGENT INVESTIGATION REPORT
+======================================================================
+
+Total investigations: 5
+
+----------------------------------------------------------------------
+INVESTIGATION 1
+----------------------------------------------------------------------
+Threat class: Normal
+Severity: Unknown
+Agent confidence: Very Low (36.41/100)
+
+FINAL VERDICT:
+Potential malicious activity detected, but the exact threat category is uncertain. Classifier disagreement reduces confidence in the exact attack category.
+
+KEY FINDINGS:
+- The binary detector identified the traffic as an attack with an attack probability of 73.93%.
+- Random Forest predicted Normal with 17.17% confidence.
+- Two-Stream predicted Shellcode with 80.03% confidence.
+- Isolation Forest did not flag the sample as anomalous.
+- The supervised classifiers disagree on the specific attack class.
+- Overall evidence strength is Low.
+- The investigation is currently centered on the Normal threat category.
+
+RECOMMENDED ANALYST ACTIONS:
+- Keep the event under monitoring and collect additional evidence if available.
+- Investigate the classifier disagreement before assigning a definitive attack category.
+- Review SHAP and LIME explanations to understand which input features influenced the model decision.
+
+MITRE ATT&CK CANDIDATE MAPPINGS:
+- No candidate technique mapping.
+
+----------------------------------------------------------------------
+INVESTIGATION 2
+----------------------------------------------------------------------
+Threat class: Generic
+Severity: Unknown
+Agent confidence: Very Low (16.41/100)
+
+FINAL VERDICT:
+Potential Generic activity requires investigation. Classifier disagreement reduces confidence in the exact attack category.
+
+KEY FINDINGS:
+- The binary detector identified the traffic as an attack with an attack probability of 50.67%.
+- Random Forest predicted Generic with 27.38% confidence.
+- Two-Stream predicted Fuzzers with 38.00% confidence.
+- Isolation Forest did not flag the sample as anomalous.
+- The supervised classifiers disagree on the specific attack class.
+- Overall evidence strength is Low.
+- The investigation is currently centered on the Generic threat category.
+
+RECOMMENDED ANALYST ACTIONS:
+- Keep the event under monitoring and collect additional evidence if available.
+- Investigate the classifier disagreement before assigning a definitive attack category.
+- Correlate the predicted threat category with host, application, authentication, and network logs.
+- Review SHAP and LIME explanations to understand which input features influenced the model decision.
+
+MITRE ATT&CK CANDIDATE MAPPINGS:
+- No candidate technique mapping.
+
+----------------------------------------------------------------------
+INVESTIGATION 3
+----------------------------------------------------------------------
+Threat class: Exploits
+Severity: Unknown
+Agent confidence: Very Low (34.89/100)
+
+FINAL VERDICT:
+Potential Exploits activity requires investigation.
+
+KEY FINDINGS:
+- The binary detector identified the traffic as an attack with an attack probability of 46.47%.
+- Random Forest predicted Exploits with 18.02% confidence.
+- Two-Stream predicted Exploits with 45.09% confidence.
+- Isolation Forest did not flag the sample as anomalous.
+- The supervised classifiers agree on the predicted attack class.
+- Overall evidence strength is Low.
+- The investigation is currently centered on the Exploits threat category.
+
+RECOMMENDED ANALYST ACTIONS:
+- Keep the event under monitoring and collect additional evidence if available.
+- Correlate the predicted threat category with host, application, authentication, and network logs.
+- Review SHAP and LIME explanations to understand which input features influenced the model decision.
+
+MITRE ATT&CK CANDIDATE MAPPINGS:
+- No candidate technique mapping.
+
+----------------------------------------------------------------------
+INVESTIGATION 4
+----------------------------------------------------------------------
+Threat class: Normal
+Severity: Unknown
+Agent confidence: Very Low (38.06/100)
+
+FINAL VERDICT:
+Potential malicious activity detected, but the exact threat category is uncertain. Classifier disagreement reduces confidence in the exact attack category.
+
+KEY FINDINGS:
+- The binary detector identified the traffic as an attack with an attack probability of 98.51%.
+- Random Forest predicted Normal with 28.01% confidence.
+- Two-Stream predicted Analysis with 26.00% confidence.
+- Isolation Forest did not flag the sample as anomalous.
+- The supervised classifiers disagree on the specific attack class.
+- Overall evidence strength is Low.
+- The investigation is currently centered on the Normal threat category.
+
+RECOMMENDED ANALYST ACTIONS:
+- Keep the event under monitoring and collect additional evidence if available.
+- Investigate the classifier disagreement before assigning a definitive attack category.
+- Review SHAP and LIME explanations to understand which input features influenced the model decision.
+
+MITRE ATT&CK CANDIDATE MAPPINGS:
+- No candidate technique mapping.
+
+----------------------------------------------------------------------
+INVESTIGATION 5
+----------------------------------------------------------------------
+Threat class: Normal
+Severity: Unknown
+Agent confidence: Very Low (18.64/100)
+
+FINAL VERDICT:
+Potential malicious activity detected, but the exact threat category is uncertain. Classifier disagreement reduces confidence in the exact attack category.
+
+KEY FINDINGS:
+- The binary detector identified the traffic as an attack with an attack probability of 45.06%.
+- Random Forest predicted Normal with 20.00% confidence.
+- Two-Stream predicted Exploits with 40.85% confidence.
+- Isolation Forest did not flag the sample as anomalous.
+- The supervised classifiers disagree on the specific attack class.
+- Overall evidence strength is Low.
+- The investigation is currently centered on the Normal threat category.
+
+RECOMMENDED ANALYST ACTIONS:
+- Keep the event under monitoring and collect additional evidence if available.
+- Investigate the classifier disagreement before assigning a definitive attack category.
+- Review SHAP and LIME explanations to understand which input features influenced the model decision.
+
+MITRE ATT&CK CANDIDATE MAPPINGS:
+- No candidate technique mapping.
+
+======================================================================
+END OF REPORT
+======================================================================
