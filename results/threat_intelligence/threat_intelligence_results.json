@@ -1,0 +1,148 @@
+{
+    "system": "CyberAgent",
+    "phase": "Threat Intelligence and MITRE ATT&CK Mapping",
+    "description": "Evidence-aware threat intelligence and candidate MITRE ATT&CK mappings generated from CyberAgent threat profiles.",
+    "mapping_policy": "Mappings are candidate associations and require corroborating telemetry before being considered confirmed.",
+    "samples_analyzed": 5,
+    "results": [
+        {
+            "sample_number": 0,
+            "threat_class": "Normal",
+            "severity_assessment": {
+                "score": 12.94,
+                "level": "Informational"
+            },
+            "threat_intelligence": {
+                "attack_class": "Normal",
+                "threat_description": "Traffic classified as normal by the multiclass classifier.",
+                "technique_count": 0,
+                "candidate_techniques": [],
+                "analyst_guidance": [
+                    "No ATT&CK technique can be confidently inferred from the available evidence."
+                ],
+                "mapping_policy": "ATT&CK mappings are candidate mappings based on available flow-level evidence. They should be corroborated with host, application, authentication, or other security telemetry before being treated as confirmed techniques."
+            }
+        },
+        {
+            "sample_number": 1,
+            "threat_class": "Generic",
+            "severity_assessment": {
+                "score": 27.5,
+                "level": "Low"
+            },
+            "threat_intelligence": {
+                "attack_class": "Generic",
+                "threat_description": "Broad malicious traffic that does not map cleanly to a specific ATT&CK technique using flow-level evidence alone.",
+                "technique_count": 1,
+                "candidate_techniques": [
+                    {
+                        "technique_id": null,
+                        "technique_name": "No direct ATT&CK mapping",
+                        "tactic": "Unknown",
+                        "relevance": "Low",
+                        "confidence": "Low",
+                        "reason": "The Generic class is broad and does not provide enough behavioral evidence for a specific ATT&CK technique.",
+                        "required_evidence": [
+                            "Source and destination context",
+                            "Protocol/service information",
+                            "Repeated traffic behavior",
+                            "Host-level telemetry"
+                        ]
+                    }
+                ],
+                "analyst_guidance": [
+                    "No direct ATT&CK mapping. Additional telemetry is required before assigning a specific ATT&CK technique.",
+                    "Recommended corroborating evidence: Source and destination context, Protocol/service information, Repeated traffic behavior, Host-level telemetry."
+                ],
+                "mapping_policy": "ATT&CK mappings are candidate mappings based on available flow-level evidence. They should be corroborated with host, application, authentication, or other security telemetry before being treated as confirmed techniques."
+            }
+        },
+        {
+            "sample_number": 2,
+            "threat_class": "Exploits",
+            "severity_assessment": {
+                "score": 50.95,
+                "level": "Medium"
+            },
+            "threat_intelligence": {
+                "attack_class": "Exploits",
+                "threat_description": "Traffic associated with exploitation-related network behavior.",
+                "technique_count": 2,
+                "candidate_techniques": [
+                    {
+                        "technique_id": "T1190",
+                        "technique_name": "Exploit Public-Facing Application",
+                        "tactic": "Initial Access",
+                        "relevance": "High",
+                        "confidence": "Medium",
+                        "reason": "Exploitation traffic may be consistent with attempts to exploit an exposed application or network service.",
+                        "required_evidence": [
+                            "Internet-facing target",
+                            "Exploit-like request pattern",
+                            "Target service information",
+                            "Application or server logs",
+                            "Evidence of exploitation outcome"
+                        ]
+                    },
+                    {
+                        "technique_id": "T1210",
+                        "technique_name": "Exploitation of Remote Services",
+                        "tactic": "Lateral Movement",
+                        "relevance": "Medium",
+                        "confidence": "Low",
+                        "reason": "Exploitation-related traffic can also be relevant to remote-service exploitation, but network-flow evidence alone cannot establish lateral movement.",
+                        "required_evidence": [
+                            "Internal source and destination",
+                            "Remote service identification",
+                            "Vulnerability evidence",
+                            "Successful access or execution evidence"
+                        ]
+                    }
+                ],
+                "analyst_guidance": [
+                    "Candidate ATT&CK mapping: T1190 - Exploit Public-Facing Application. Mapping confidence: Medium.",
+                    "Recommended corroborating evidence: Internet-facing target, Exploit-like request pattern, Target service information, Application or server logs, Evidence of exploitation outcome.",
+                    "Candidate ATT&CK mapping: T1210 - Exploitation of Remote Services. Mapping confidence: Low.",
+                    "Recommended corroborating evidence: Internal source and destination, Remote service identification, Vulnerability evidence, Successful access or execution evidence."
+                ],
+                "mapping_policy": "ATT&CK mappings are candidate mappings based on available flow-level evidence. They should be corroborated with host, application, authentication, or other security telemetry before being treated as confirmed techniques."
+            }
+        },
+        {
+            "sample_number": 3,
+            "threat_class": "Normal",
+            "severity_assessment": {
+                "score": 11.66,
+                "level": "Informational"
+            },
+            "threat_intelligence": {
+                "attack_class": "Normal",
+                "threat_description": "Traffic classified as normal by the multiclass classifier.",
+                "technique_count": 0,
+                "candidate_techniques": [],
+                "analyst_guidance": [
+                    "No ATT&CK technique can be confidently inferred from the available evidence."
+                ],
+                "mapping_policy": "ATT&CK mappings are candidate mappings based on available flow-level evidence. They should be corroborated with host, application, authentication, or other security telemetry before being treated as confirmed techniques."
+            }
+        },
+        {
+            "sample_number": 4,
+            "threat_class": "Normal",
+            "severity_assessment": {
+                "score": 8.66,
+                "level": "Informational"
+            },
+            "threat_intelligence": {
+                "attack_class": "Normal",
+                "threat_description": "Traffic classified as normal by the multiclass classifier.",
+                "technique_count": 0,
+                "candidate_techniques": [],
+                "analyst_guidance": [
+                    "No ATT&CK technique can be confidently inferred from the available evidence."
+                ],
+                "mapping_policy": "ATT&CK mappings are candidate mappings based on available flow-level evidence. They should be corroborated with host, application, authentication, or other security telemetry before being treated as confirmed techniques."
+            }
+        }
+    ]
+}
