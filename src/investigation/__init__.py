@@ -13,5 +13,6 @@ __all__ = [
     "local_lime",
     "threat_profiler",
     "severity_engine",
+    "confidence_engine",
     "investigation_agent",
 ]

@@ -232,6 +232,43 @@ def main():
             f"({confidence['score']:.2f}/100)"
         )
 
+        components = confidence.get(
+            "components",
+            {}
+        )
+
+        print("Confidence components:")
+
+        print(
+            f"  Binary detection    : "
+            f"{components.get('binary_detection', 0):.2f}"
+        )
+
+        print(
+            f"  Classifier confidence: "
+            f"{components.get('classifier_confidence', 0):.2f}"
+        )
+
+        print(
+            f"  Model agreement     : "
+            f"{components.get('model_agreement', 0):.2f}"
+        )
+
+        print(
+            f"  Evidence strength   : "
+            f"{components.get('evidence_strength', 0):.2f}"
+        )
+
+        print(
+            f"  Anomaly evidence    : "
+            f"{components.get('anomaly_evidence', 0):.2f}"
+        )
+
+        print(
+            f"  Threat intelligence: "
+            f"{components.get('threat_intelligence_support', 0):.2f}"
+        )
+
         print(
             "Key findings         : "
             f"{len(result['key_findings'])}"

@@ -323,6 +323,73 @@ st.info(verdict)
 
 
 # ----------------------------------------------------------------------
+# Confidence Breakdown
+# ----------------------------------------------------------------------
+
+st.subheader("Confidence Breakdown")
+
+components = agent_confidence.get(
+    "components",
+    {}
+)
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+
+    st.metric(
+        "Binary Evidence",
+        f"{components.get('binary_detection', 0):.1f}%"
+    )
+
+with col2:
+
+    st.metric(
+        "Classifier Evidence",
+        f"{components.get('classifier_confidence', 0):.1f}%"
+    )
+
+with col3:
+
+    st.metric(
+        "Model Agreement",
+        f"{components.get('model_agreement', 0):.1f}%"
+    )
+
+
+col4, col5, col6 = st.columns(3)
+
+with col4:
+
+    st.metric(
+        "Evidence Strength",
+        f"{components.get('evidence_strength', 0):.1f}%"
+    )
+
+with col5:
+
+    st.metric(
+        "Anomaly Evidence",
+        f"{components.get('anomaly_evidence', 0):.1f}%"
+    )
+
+with col6:
+
+    st.metric(
+        "Threat Intelligence",
+        f"{components.get('threat_intelligence_support', 0):.1f}%"
+    )
+
+
+st.info(
+    agent_confidence.get(
+        "interpretation",
+        "Investigation confidence is based on available evidence."
+    )
+)
+
+
+# ----------------------------------------------------------------------
 # Detection assessment
 # ----------------------------------------------------------------------
 

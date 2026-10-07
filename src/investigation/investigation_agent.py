@@ -15,6 +15,10 @@ The agent does not claim certainty beyond the available evidence.
 
 from typing import Any, Dict, List
 
+from src.investigation.confidence_engine import (
+    InvestigationConfidenceEngine,
+)
+
 
 class InvestigationAgent:
     """
@@ -32,6 +36,9 @@ class InvestigationAgent:
     ):
         self.agent_name = agent_name
         self.version = version
+
+        # Phase 10: Transparent investigation confidence engine
+        self.confidence_engine = InvestigationConfidenceEngine()
 
     # ------------------------------------------------------------------
     # Threat class extraction
@@ -1026,10 +1033,33 @@ class InvestigationAgent:
             threat_intelligence,
         )
 
-        confidence = self._calculate_agent_confidence(
-            evidence,
-            threat_profile,
-            threat_intelligence,
+        # Phase 10: Transparent investigation confidence
+        #
+        # This replaces the previous manual confidence calculation
+        # while preserving the existing evidence objects.
+        confidence_result = self.confidence_engine.calculate(
+            binary_detection=evidence.get(
+                "binary_detection",
+                {},
+            ),
+            classification=evidence.get(
+                "attack_classification",
+                {},
+            ),
+            anomaly_detection=evidence.get(
+                "anomaly_detection",
+                {},
+            ),
+            model_consistency=evidence.get(
+                "model_consistency",
+                {},
+            ),
+            evidence_strength=evidence.get(
+                "evidence_strength",
+                {},
+            ),
+            threat_intelligence=mitre_information,
+            threat_class=threat_class,
         )
 
         recommendations = self._generate_recommendations(
@@ -1057,17 +1087,17 @@ class InvestigationAgent:
                 "verdict": verdict,
                 "threat_class": threat_class,
                 "severity": severity,
-                "confidence": confidence,
+                "confidence": confidence_result,
             },
 
             "threat_class": threat_class,
 
             "severity": severity,
 
-            "agent_confidence": confidence,
+            "agent_confidence": confidence_result,
 
             # Keep confidence as a direct compatibility field
-            "confidence": confidence,
+            "confidence": confidence_result,
 
             # Required by the investigation runner
             "key_findings": findings,
@@ -1098,12 +1128,14 @@ if __name__ == "__main__":
     agent = InvestigationAgent()
 
     synthetic_evidence = {
+
         "binary_detection": {
             "prediction": "Attack",
             "attack_probability": 0.95,
         },
 
         "attack_classification": {
+
             "random_forest": {
                 "predicted_class": "Exploits",
                 "confidence": 0.91,
@@ -1130,6 +1162,7 @@ if __name__ == "__main__":
         },
 
         "explainability": {
+
             "shap": {
                 "top_features": [
                     "dns_response_activity",
@@ -1147,6 +1180,7 @@ if __name__ == "__main__":
     }
 
     synthetic_profile = {
+
         "threat_profile": {
             "predicted_threat": "Exploits",
         },
@@ -1158,6 +1192,7 @@ if __name__ == "__main__":
     }
 
     synthetic_intelligence = {
+
         "mitre_mappings": [
             {
                 "technique_id": "T1190",
@@ -1184,24 +1219,41 @@ if __name__ == "__main__":
     )
 
     print()
+
     print("Threat class:")
     print(result["threat_class"])
 
     print()
+
     print("Severity:")
     print(result["severity"])
 
     print()
+
     print("Agent confidence:")
     print(result["agent_confidence"])
 
     print()
+
     print("Verdict:")
     print(result["investigation_verdict"]["verdict"])
 
     print()
+
     print("Key findings:")
     print(len(result["key_findings"]))
 
     print()
-    print("Investigation agent test completed successfully.")
+
+    print("Confidence components:")
+
+    for component, value in result[
+        "agent_confidence"
+    ].get(
+        "components",
+        {},
+    ).items():
+
+        print(
+            f"{component}: {value}"
+        )
