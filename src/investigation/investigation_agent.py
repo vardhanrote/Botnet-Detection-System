@@ -1,423 +1,370 @@
 """
 CyberAgent Investigation Agent
 
-Evidence-grounded investigation reasoning layer.
-
-This module does NOT independently decide whether traffic is malicious.
-Instead, it combines outputs from:
-
-- Binary detector
-- Random Forest
-- Two-Stream model
-- Isolation Forest
-- SHAP
-- LIME
+Evidence-grounded investigation layer that combines:
+- ML detection results
+- Model agreement/disagreement
+- Anomaly detection
+- SHAP/LIME explainability
 - Threat profiling
-- Severity engine
+- Severity assessment
 - MITRE ATT&CK candidate mappings
 
-The goal is to convert model outputs into an analyst-friendly
-investigation verdict.
-
-Important:
-- Anomaly detection is not proof of maliciousness.
-- SHAP/LIME show model reasoning, not causality.
-- MITRE mappings are candidate mappings and require corroboration.
+The agent does not claim certainty beyond the available evidence.
 """
-
-from __future__ import annotations
 
 from typing import Any, Dict, List
 
 
 class InvestigationAgent:
     """
-    Evidence-grounded CyberAgent reasoning engine.
+    Evidence-grounded investigation agent.
+
+    This component converts outputs from the detection,
+    explainability, threat profiling, and threat intelligence
+    layers into an analyst-oriented investigation result.
     """
 
-    def __init__(self) -> None:
-        self.agent_name = "CyberAgent Investigation Agent"
-        self.version = "1.0.0"
-
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
-
-    def investigate(
+    def __init__(
         self,
-        evidence: Dict[str, Any],
-        threat_profile: Dict[str, Any] | None = None,
-        threat_intelligence: Dict[str, Any] | None = None,
-    ) -> Dict[str, Any]:
-        """
-        Perform a complete investigation using existing evidence.
-        """
-
-        threat_profile = threat_profile or {}
-        threat_intelligence = threat_intelligence or {}
-
-        binary = evidence.get("binary_detection", {})
-        classification = evidence.get("attack_classification", {})
-        anomaly = evidence.get("anomaly_detection", {})
-        consistency = evidence.get("model_consistency", {})
-        strength = evidence.get("evidence_strength", {})
-
-        rf = classification.get("random_forest", {})
-        two_stream = classification.get("two_stream", {})
-
-        threat_class = self._get_threat_class(
-            rf,
-            two_stream,
-            threat_profile,
-        )
-
-        severity = self._get_severity(
-            evidence,
-            threat_profile,
-        )
-
-        findings = self._generate_findings(
-            binary=binary,
-            rf=rf,
-            two_stream=two_stream,
-            anomaly=anomaly,
-            consistency=consistency,
-            strength=strength,
-            threat_class=threat_class,
-        )
-
-        explainability = self._summarize_explainability(evidence)
-
-        mitre = self._extract_mitre_information(
-            threat_intelligence
-        )
-
-        reasoning = self._generate_reasoning(
-            binary=binary,
-            rf=rf,
-            two_stream=two_stream,
-            anomaly=anomaly,
-            consistency=consistency,
-            strength=strength,
-            threat_class=threat_class,
-            severity=severity,
-        )
-
-        confidence = self._calculate_agent_confidence(
-            evidence=evidence,
-            threat_class=threat_class,
-        )
-
-        recommendations = self._generate_recommendations(
-            threat_class=threat_class,
-            severity=severity,
-            anomaly=anomaly,
-            consistency=consistency,
-            mitre=mitre,
-        )
-
-        verdict = self._generate_verdict(
-            binary=binary,
-            threat_class=threat_class,
-            severity=severity,
-            confidence=confidence,
-            consistency=consistency,
-        )
-
-        return {
-            "agent": {
-                "name": self.agent_name,
-                "version": self.version,
-                "reasoning_type": "evidence-grounded",
-            },
-            "investigation_verdict": verdict,
-            "threat_class": threat_class,
-            "severity": severity,
-            "agent_confidence": confidence,
-            "key_findings": findings,
-            "reasoning": reasoning,
-            "explainability": explainability,
-            "mitre_attack": mitre,
-            "recommended_actions": recommendations,
-            "limitations": self._limitations(),
-        }
+        agent_name: str = "CyberAgent Investigation Agent",
+        version: str = "1.0.0",
+    ):
+        self.agent_name = agent_name
+        self.version = version
 
     # ------------------------------------------------------------------
-    # Threat class
+    # Threat class extraction
     # ------------------------------------------------------------------
 
     def _get_threat_class(
         self,
-        rf: Dict[str, Any],
-        two_stream: Dict[str, Any],
+        evidence: Dict[str, Any],
         threat_profile: Dict[str, Any],
     ) -> str:
-        """
-        Determine the investigation threat class.
 
-        Priority:
-        1. Explicit threat profile
-        2. RF and Two-Stream agreement
-        3. Random Forest
-        4. Two-Stream
-        """
+        # Phase 8 structure
+        profile = threat_profile.get("threat_profile", {})
 
-        profile_class = (
-            threat_profile.get("threat_class")
-            or threat_profile.get("attack_class")
-            or threat_profile.get("predicted_class")
+        if profile:
+            predicted = profile.get("predicted_threat")
+
+            if predicted:
+                return predicted
+
+        # Direct fallback
+        predicted = threat_profile.get("predicted_threat")
+
+        if predicted:
+            return predicted
+
+        # Evidence fallback
+        classification = evidence.get(
+            "attack_classification",
+            {},
         )
 
-        if profile_class:
-            return str(profile_class)
-
-        rf_class = (
-            rf.get("predicted_class")
-            or rf.get("prediction")
-            or "Unknown"
+        rf = classification.get(
+            "random_forest",
+            {},
         )
 
-        ts_class = (
-            two_stream.get("multiclass_prediction")
-            or two_stream.get("predicted_class")
-            or "Unknown"
-        )
+        predicted = rf.get("predicted_class")
 
-        if rf_class == ts_class:
-            return str(rf_class)
+        if predicted:
+            return predicted
 
-        if rf_class != "Unknown":
-            return str(rf_class)
-
-        return str(ts_class)
+        return "Unknown"
 
     # ------------------------------------------------------------------
-    # Severity
+    # Severity extraction
     # ------------------------------------------------------------------
 
     def _get_severity(
         self,
-        evidence: Dict[str, Any],
         threat_profile: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """
-        Extract severity information from the existing severity engine.
-        """
 
-        severity = {}
+        # Phase 8 structure
+        severity_data = threat_profile.get(
+            "severity_assessment",
+            {},
+        )
 
-        if isinstance(threat_profile, dict):
-            severity = threat_profile.get("severity", {})
+        # Backward compatibility
+        if not severity_data:
+            severity_data = threat_profile.get(
+                "severity",
+                {},
+            )
 
-        if not severity:
-            severity = evidence.get("severity", {})
+        level = severity_data.get(
+            "severity_level",
+            severity_data.get(
+                "level",
+                "Unknown",
+            ),
+        )
 
-        if isinstance(severity, str):
-            return {
-                "level": severity,
-                "score": None,
-            }
+        score = severity_data.get(
+            "severity_score",
+            severity_data.get(
+                "score",
+            ),
+        )
 
         return {
-            "level": severity.get("level", "Unknown"),
-            "score": severity.get("score"),
+            "level": level,
+            "score": score,
         }
 
     # ------------------------------------------------------------------
-    # Findings
+    # Findings generation
     # ------------------------------------------------------------------
 
     def _generate_findings(
         self,
-        binary: Dict[str, Any],
-        rf: Dict[str, Any],
-        two_stream: Dict[str, Any],
-        anomaly: Dict[str, Any],
-        consistency: Dict[str, Any],
-        strength: Dict[str, Any],
-        threat_class: str,
+        evidence: Dict[str, Any],
+        threat_profile: Dict[str, Any],
+        threat_intelligence: Dict[str, Any],
     ) -> List[str]:
 
-        findings: List[str] = []
+        findings = []
 
-        prediction = str(
-            binary.get("prediction", "Unknown")
-        ).lower()
-
-        attack_probability = binary.get(
-            "attack_probability"
+        binary = evidence.get(
+            "binary_detection",
+            {},
         )
 
-        if prediction == "attack":
-            if attack_probability is not None:
-                findings.append(
-                    "The binary detector identified the traffic "
-                    f"as an attack with an attack probability of "
-                    f"{float(attack_probability):.2%}."
-                )
-            else:
-                findings.append(
-                    "The binary detector identified the traffic "
-                    "as an attack."
-                )
+        classification = evidence.get(
+            "attack_classification",
+            {},
+        )
 
-        elif prediction == "normal":
-            findings.append(
-                "The binary detector classified the traffic as normal."
+        rf = classification.get(
+            "random_forest",
+            {},
+        )
+
+        two_stream = classification.get(
+            "two_stream",
+            {},
+        )
+
+        anomaly = evidence.get(
+            "anomaly_detection",
+            {},
+        )
+
+        consistency = evidence.get(
+            "model_consistency",
+            {},
+        )
+
+        evidence_strength = evidence.get(
+            "evidence_strength",
+            {},
+        )
+
+        # Binary detection
+        if binary.get("prediction") == "Attack":
+
+            attack_probability = binary.get(
+                "attack_probability"
             )
 
-        rf_class = rf.get("predicted_class")
+            if attack_probability is not None:
+
+                findings.append(
+                    f"Binary detection classified the "
+                    f"traffic as attack activity with "
+                    f"{attack_probability:.2%} attack probability."
+                )
+
+            else:
+
+                findings.append(
+                    "Binary detection classified the "
+                    "traffic as attack activity."
+                )
+
+        else:
+
+            findings.append(
+                "Binary detection classified the "
+                "traffic as normal traffic."
+            )
+
+        # Random Forest
+        rf_class = rf.get(
+            "predicted_class"
+        )
+
+        rf_confidence = rf.get(
+            "confidence"
+        )
 
         if rf_class:
-            rf_confidence = rf.get("confidence")
 
             if rf_confidence is not None:
+
                 findings.append(
-                    f"Random Forest predicted {rf_class} "
-                    f"with {float(rf_confidence):.2%} confidence."
-                )
-            else:
-                findings.append(
-                    f"Random Forest predicted {rf_class}."
+                    f"Random Forest predicted "
+                    f"{rf_class} with "
+                    f"{rf_confidence:.2%} confidence."
                 )
 
-        ts_class = two_stream.get(
+            else:
+
+                findings.append(
+                    f"Random Forest predicted "
+                    f"{rf_class}."
+                )
+
+        # Two-Stream
+        two_stream_class = two_stream.get(
             "multiclass_prediction"
         )
 
-        if ts_class:
-            ts_confidence = two_stream.get(
-                "multiclass_confidence"
-            )
-
-            if ts_confidence is not None:
-                findings.append(
-                    f"Two-Stream predicted {ts_class} "
-                    f"with {float(ts_confidence):.2%} confidence."
-                )
-            else:
-                findings.append(
-                    f"Two-Stream predicted {ts_class}."
-                )
-
-        is_anomaly = anomaly.get("is_anomaly")
-
-        if is_anomaly:
-            findings.append(
-                "Isolation Forest detected a deviation from "
-                "the learned normal traffic distribution."
-            )
-        else:
-            findings.append(
-                "Isolation Forest did not flag the sample as anomalous."
-            )
-
-        disagreement = consistency.get(
-            "model_disagreement"
+        two_stream_confidence = two_stream.get(
+            "multiclass_confidence"
         )
 
-        if disagreement:
+        if two_stream_class:
+
+            if two_stream_confidence is not None:
+
+                findings.append(
+                    f"Two-Stream model predicted "
+                    f"{two_stream_class} with "
+                    f"{two_stream_confidence:.2%} confidence."
+                )
+
+            else:
+
+                findings.append(
+                    f"Two-Stream model predicted "
+                    f"{two_stream_class}."
+                )
+
+        # Model agreement
+        if consistency.get("model_disagreement"):
+
             findings.append(
-                "The supervised classifiers disagree on "
-                "the specific attack class."
-            )
-        else:
-            findings.append(
-                "The supervised classifiers agree on "
-                "the predicted attack class."
+                "The supervised classifiers disagree "
+                "on the specific threat category."
             )
 
-        evidence_level = strength.get(
+        else:
+
+            findings.append(
+                "The supervised classifiers agree "
+                "on the predicted threat category."
+            )
+
+        # Anomaly detection
+        if anomaly.get("is_anomaly"):
+
+            findings.append(
+                "Isolation Forest detected a deviation "
+                "from the learned normal traffic distribution."
+            )
+
+        else:
+
+            findings.append(
+                "Isolation Forest did not flag the "
+                "sample as anomalous."
+            )
+
+        # Evidence strength
+        strength_level = evidence_strength.get(
             "level"
         )
 
-        if evidence_level:
-            findings.append(
-                f"Overall evidence strength is {evidence_level}."
-            )
+        strength_score = evidence_strength.get(
+            "score"
+        )
 
-        if threat_class != "Unknown":
+        if strength_level:
+
+            if strength_score is not None:
+
+                findings.append(
+                    f"Overall evidence strength is "
+                    f"{strength_level} "
+                    f"({strength_score}/100)."
+                )
+
+            else:
+
+                findings.append(
+                    f"Overall evidence strength is "
+                    f"{strength_level}."
+                )
+
+        # Threat intelligence
+        mappings = threat_intelligence.get(
+            "mitre_mappings",
+            threat_intelligence.get(
+                "mappings",
+                [],
+            ),
+        )
+
+        if mappings:
+
             findings.append(
-                f"The investigation is currently centered on "
-                f"the {threat_class} threat category."
+                f"Threat intelligence provided "
+                f"{len(mappings)} candidate MITRE ATT&CK "
+                f"mapping(s) for analyst review."
             )
 
         return findings
 
     # ------------------------------------------------------------------
-    # Explainability
+    # Explainability summary
     # ------------------------------------------------------------------
 
     def _summarize_explainability(
         self,
         evidence: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """
-        Extract SHAP/LIME information if available.
-        """
 
-        result = {
-            "shap": {},
-            "lime": {},
+        explainability = evidence.get(
+            "explainability",
+            {},
+        )
+
+        shap_data = explainability.get(
+            "shap",
+            explainability.get(
+                "local_shap",
+                {},
+            ),
+        )
+
+        lime_data = explainability.get(
+            "lime",
+            explainability.get(
+                "local_lime",
+                {},
+            ),
+        )
+
+        return {
+            "shap": shap_data,
+            "lime": lime_data,
+            "interpretation": (
+                "SHAP and LIME provide local model "
+                "explanations. They describe feature "
+                "contributions to the prediction and "
+                "should not be interpreted as causal evidence."
+            ),
         }
 
-        shap_data = evidence.get(
-            "shap_local"
-        )
-
-        lime_data = evidence.get(
-            "lime_local"
-        )
-
-        if shap_data is None:
-            shap_data = evidence.get(
-                "local_shap"
-            )
-
-        if lime_data is None:
-            lime_data = evidence.get(
-                "local_lime"
-            )
-
-        if isinstance(shap_data, dict):
-            result["shap"] = self._clean_explanation(
-                shap_data
-            )
-
-        if isinstance(lime_data, dict):
-            result["lime"] = self._clean_explanation(
-                lime_data
-            )
-
-        return result
-
-    def _clean_explanation(
-        self,
-        explanation: Dict[str, Any],
-    ) -> Dict[str, Any]:
-        """
-        Keep explanation output structured without making
-        unsupported causal claims.
-        """
-
-        result = {}
-
-        for key in [
-            "predicted_class",
-            "prediction",
-            "confidence",
-            "top_features",
-            "features",
-            "explanation",
-            "feature_contributions",
-        ]:
-            if key in explanation:
-                result[key] = explanation[key]
-
-        return result
-
     # ------------------------------------------------------------------
-    # MITRE
+    # MITRE information
     # ------------------------------------------------------------------
 
     def _extract_mitre_information(
@@ -425,27 +372,32 @@ class InvestigationAgent:
         threat_intelligence: Dict[str, Any],
     ) -> Dict[str, Any]:
 
-        mappings = (
-            threat_intelligence.get("mitre_mappings")
-            or threat_intelligence.get("mappings")
-            or threat_intelligence.get("techniques")
-            or []
+        mappings = threat_intelligence.get(
+            "mitre_mappings",
+            threat_intelligence.get(
+                "mappings",
+                [],
+            ),
         )
 
-        guidance = (
-            threat_intelligence.get("analyst_guidance")
-            or []
+        guidance = threat_intelligence.get(
+            "analyst_guidance",
+            [],
+        )
+
+        policy = threat_intelligence.get(
+            "mapping_policy",
+            (
+                "ATT&CK mappings are candidate mappings "
+                "based on flow-level evidence and require "
+                "additional telemetry for confirmation."
+            ),
         )
 
         return {
-            "candidate_techniques": mappings,
+            "mappings": mappings,
             "analyst_guidance": guidance,
-            "mapping_policy": (
-                "ATT&CK techniques are candidate mappings based "
-                "on flow-level evidence and require corroborating "
-                "host, application, authentication, or other "
-                "telemetry before being treated as confirmed."
-            ),
+            "mapping_policy": policy,
         }
 
     # ------------------------------------------------------------------
@@ -454,150 +406,213 @@ class InvestigationAgent:
 
     def _generate_reasoning(
         self,
-        binary: Dict[str, Any],
-        rf: Dict[str, Any],
-        two_stream: Dict[str, Any],
-        anomaly: Dict[str, Any],
-        consistency: Dict[str, Any],
-        strength: Dict[str, Any],
-        threat_class: str,
-        severity: Dict[str, Any],
+        evidence: Dict[str, Any],
+        threat_profile: Dict[str, Any],
+        threat_intelligence: Dict[str, Any],
     ) -> List[str]:
 
         reasoning = []
 
-        prediction = str(
-            binary.get("prediction", "Unknown")
-        ).lower()
+        binary = evidence.get(
+            "binary_detection",
+            {},
+        )
 
-        if prediction == "attack":
+        classification = evidence.get(
+            "attack_classification",
+            {},
+        )
+
+        rf = classification.get(
+            "random_forest",
+            {},
+        )
+
+        two_stream = classification.get(
+            "two_stream",
+            {},
+        )
+
+        anomaly = evidence.get(
+            "anomaly_detection",
+            {},
+        )
+
+        consistency = evidence.get(
+            "model_consistency",
+            {},
+        )
+
+        evidence_strength = evidence.get(
+            "evidence_strength",
+            {},
+        )
+
+        # Binary evidence
+        if binary.get("prediction") == "Attack":
+
             reasoning.append(
-                "Step 1: The binary detection stage provides "
-                "evidence that the traffic is potentially malicious."
+                "The binary detector provides evidence "
+                "that the traffic may represent malicious activity."
             )
+
         else:
+
             reasoning.append(
-                "Step 1: The binary detection stage does not "
-                "provide sufficient evidence of an attack."
+                "The binary detector does not provide "
+                "strong evidence of malicious activity."
             )
 
-        rf_class = rf.get("predicted_class")
-        ts_class = two_stream.get(
+        # Classifier comparison
+        rf_class = rf.get(
+            "predicted_class"
+        )
+
+        two_stream_class = two_stream.get(
             "multiclass_prediction"
         )
 
-        if rf_class == ts_class and rf_class:
+        if (
+            rf_class
+            and two_stream_class
+            and rf_class == two_stream_class
+        ):
+
             reasoning.append(
-                f"Step 2: Random Forest and Two-Stream both "
-                f"support the {rf_class} classification."
-            )
-        else:
-            reasoning.append(
-                "Step 2: The supervised classifiers provide "
-                "different attack-class predictions, reducing "
-                "confidence in the exact threat category."
+                "Random Forest and the Two-Stream classifier "
+                "produce the same threat category, increasing "
+                "classification consistency."
             )
 
+        elif rf_class or two_stream_class:
+
+            reasoning.append(
+                "The supervised classifiers produce different "
+                "threat categories, reducing confidence in "
+                "the exact attack classification."
+            )
+
+        # Anomaly evidence
         if anomaly.get("is_anomaly"):
+
             reasoning.append(
-                "Step 3: Isolation Forest identifies the traffic "
-                "as a deviation from the learned normal distribution."
+                "Isolation Forest independently identifies "
+                "the traffic as deviating from learned normal behavior."
             )
+
         else:
+
             reasoning.append(
-                "Step 3: Isolation Forest does not identify the "
-                "sample as anomalous, so anomaly evidence is absent."
+                "Isolation Forest does not independently "
+                "support the presence of an anomaly."
             )
 
-        evidence_level = strength.get(
-            "level",
-            "Unknown"
+        # Evidence strength
+        strength_level = evidence_strength.get(
+            "level"
         )
 
-        reasoning.append(
-            f"Step 4: The combined evidence strength is "
-            f"{evidence_level}."
+        if strength_level == "Low":
+
+            reasoning.append(
+                "The overall evidence strength is low, so "
+                "the investigation result should be treated "
+                "as preliminary."
+            )
+
+        elif strength_level == "Medium":
+
+            reasoning.append(
+                "The available evidence provides moderate "
+                "support for the investigation assessment."
+            )
+
+        elif strength_level == "High":
+
+            reasoning.append(
+                "Multiple evidence sources provide strong "
+                "support for the investigation assessment."
+            )
+
+        # Threat intelligence
+        mappings = threat_intelligence.get(
+            "mitre_mappings",
+            threat_intelligence.get(
+                "mappings",
+                [],
+            ),
         )
 
-        severity_level = severity.get(
-            "level",
-            "Unknown"
-        )
+        if mappings:
 
-        reasoning.append(
-            f"Step 5: The current investigation priority is "
-            f"{severity_level} for the {threat_class} category."
-        )
+            reasoning.append(
+                "Threat intelligence provides candidate "
+                "MITRE ATT&CK techniques that can guide "
+                "additional investigation."
+            )
 
         return reasoning
 
     # ------------------------------------------------------------------
-    # Confidence
+    # Agent confidence
     # ------------------------------------------------------------------
 
     def _calculate_agent_confidence(
         self,
         evidence: Dict[str, Any],
-        threat_class: str,
+        threat_profile: Dict[str, Any],
+        threat_intelligence: Dict[str, Any],
     ) -> Dict[str, Any]:
 
         binary = evidence.get(
             "binary_detection",
-            {}
+            {},
         )
 
         classification = evidence.get(
             "attack_classification",
-            {}
+            {},
         )
 
         rf = classification.get(
             "random_forest",
-            {}
+            {},
         )
 
-        ts = classification.get(
+        two_stream = classification.get(
             "two_stream",
-            {}
+            {},
         )
 
         anomaly = evidence.get(
             "anomaly_detection",
-            {}
+            {},
         )
 
         consistency = evidence.get(
             "model_consistency",
-            {}
+            {},
         )
 
-        strength = evidence.get(
+        evidence_strength = evidence.get(
             "evidence_strength",
-            {}
+            {},
         )
 
         score = 0.0
-        reasons = []
 
-        # Binary detector
+        # Binary confidence
         attack_probability = binary.get(
             "attack_probability"
         )
 
         if attack_probability is not None:
-            attack_probability = float(
-                attack_probability
-            )
 
-            distance_from_half = abs(
+            binary_strength = abs(
                 attack_probability - 0.5
             ) * 2
 
-            score += 25 * distance_from_half
-
-            reasons.append(
-                "binary detector confidence"
-            )
+            score += binary_strength * 25
 
         # RF confidence
         rf_confidence = rf.get(
@@ -605,84 +620,85 @@ class InvestigationAgent:
         )
 
         if rf_confidence is not None:
-            score += 20 * float(
-                rf_confidence
-            )
 
-            reasons.append(
-                "Random Forest confidence"
-            )
+            score += rf_confidence * 20
 
         # Two-Stream confidence
-        ts_confidence = ts.get(
+        two_stream_confidence = two_stream.get(
             "multiclass_confidence"
         )
 
-        if ts_confidence is not None:
-            score += 20 * float(
-                ts_confidence
-            )
+        if two_stream_confidence is not None:
 
-            reasons.append(
-                "Two-Stream confidence"
-            )
+            score += two_stream_confidence * 20
 
         # Model agreement
         if not consistency.get(
             "model_disagreement",
             False,
         ):
-            score += 15
-            reasons.append(
-                "classifier agreement"
-            )
 
-        # Anomaly evidence
+            score += 15
+
+        # Anomaly support
         if anomaly.get(
             "is_anomaly",
             False,
         ):
+
             score += 10
-            reasons.append(
-                "anomaly evidence"
-            )
 
         # Evidence strength
-        evidence_score = strength.get(
+        evidence_score = evidence_strength.get(
             "score"
         )
 
         if evidence_score is not None:
-            score += 10 * (
-                float(evidence_score) / 100
-            )
 
-            reasons.append(
-                "overall evidence strength"
+            score += (
+                min(
+                    max(
+                        evidence_score,
+                        0,
+                    ),
+                    100,
+                )
+                / 100
+                * 10
             )
 
         score = min(
+            max(score, 0.0),
             100.0,
-            max(0.0, score)
         )
 
         if score >= 80:
+
             level = "High"
+
         elif score >= 60:
+
             level = "Medium"
+
         elif score >= 40:
+
             level = "Low"
+
         else:
+
             level = "Very Low"
 
         return {
-            "score": round(score, 2),
+            "score": round(
+                score,
+                2,
+            ),
             "level": level,
-            "basis": reasons,
-            "note": (
-                "Agent confidence reflects agreement and strength "
-                "of available evidence. It is not a probability "
-                "that the attack occurred."
+            "interpretation": (
+                "Agent confidence represents the "
+                "strength and consistency of the "
+                "available evidence. It is not an "
+                "attack probability."
             ),
         }
 
@@ -692,80 +708,145 @@ class InvestigationAgent:
 
     def _generate_recommendations(
         self,
-        threat_class: str,
-        severity: Dict[str, Any],
-        anomaly: Dict[str, Any],
-        consistency: Dict[str, Any],
-        mitre: Dict[str, Any],
+        evidence: Dict[str, Any],
+        threat_profile: Dict[str, Any],
+        threat_intelligence: Dict[str, Any],
     ) -> List[str]:
 
-        recommendations: List[str] = []
+        recommendations = []
+
+        threat_class = self._get_threat_class(
+            evidence,
+            threat_profile,
+        )
+
+        severity = self._get_severity(
+            threat_profile,
+        )
 
         severity_level = severity.get(
             "level",
-            "Unknown"
+            "Unknown",
         )
 
-        if severity_level in [
-            "Critical",
-            "High",
-        ]:
+        anomaly = evidence.get(
+            "anomaly_detection",
+            {},
+        )
+
+        consistency = evidence.get(
+            "model_consistency",
+            {},
+        )
+
+        # Severity-based recommendation
+        if severity_level == "Critical":
+
             recommendations.append(
-                "Prioritize this event for analyst review."
+                "Prioritize immediate analyst investigation "
+                "and containment review."
+            )
+
+        elif severity_level == "High":
+
+            recommendations.append(
+                "Prioritize the event for analyst investigation "
+                "and review related network activity."
             )
 
         elif severity_level == "Medium":
+
             recommendations.append(
-                "Review the event and correlate it with "
-                "additional security telemetry."
+                "Review the event and collect additional "
+                "evidence before escalation."
+            )
+
+        elif severity_level == "Low":
+
+            recommendations.append(
+                "Monitor the event and correlate it with "
+                "additional telemetry."
             )
 
         else:
+
             recommendations.append(
-                "Keep the event under monitoring and "
-                "collect additional evidence if available."
+                "Treat the event as informational unless "
+                "additional evidence increases its priority."
             )
 
-        if consistency.get(
-            "model_disagreement",
-            False,
-        ):
+        # Threat-class recommendation
+        if threat_class == "DoS":
+
             recommendations.append(
-                "Investigate the classifier disagreement "
-                "before assigning a definitive attack category."
+                "Review traffic volume, affected services, "
+                "and repeated connection patterns."
             )
 
+        elif threat_class == "Reconnaissance":
+
+            recommendations.append(
+                "Review scanning behavior and contacted "
+                "network services."
+            )
+
+        elif threat_class == "Exploits":
+
+            recommendations.append(
+                "Check affected services and correlate with "
+                "host or application logs for exploitation evidence."
+            )
+
+        elif threat_class == "Backdoor":
+
+            recommendations.append(
+                "Review endpoint activity and command-and-control "
+                "indicators for additional evidence."
+            )
+
+        elif threat_class == "Shellcode":
+
+            recommendations.append(
+                "Correlate the network event with endpoint "
+                "execution and process telemetry."
+            )
+
+        elif threat_class == "Worms":
+
+            recommendations.append(
+                "Review lateral communication patterns and "
+                "possible propagation between hosts."
+            )
+
+        elif threat_class == "Fuzzers":
+
+            recommendations.append(
+                "Review repeated malformed or unusual requests "
+                "against exposed services."
+            )
+
+        # Anomaly recommendation
         if anomaly.get(
             "is_anomaly",
             False,
         ):
+
             recommendations.append(
-                "Check surrounding traffic and endpoint telemetry "
-                "because the sample differs from learned normal traffic."
+                "Investigate the anomalous traffic against "
+                "recent baseline behavior."
             )
 
-        if threat_class not in [
-            "Normal",
-            "Unknown",
-        ]:
-            recommendations.append(
-                "Correlate the predicted threat category with "
-                "host, application, authentication, and network logs."
-            )
-
-        if mitre.get(
-            "candidate_techniques"
+        # Disagreement recommendation
+        if consistency.get(
+            "model_disagreement",
+            False,
         ):
-            recommendations.append(
-                "Validate the candidate MITRE ATT&CK techniques "
-                "using additional telemetry before treating them "
-                "as confirmed."
-            )
 
-        recommendations.append(
-            "Review SHAP and LIME explanations to understand "
-            "which input features influenced the model decision."
-        )
+            recommendations.append(
+                "Use additional telemetry because classifier "
+                "disagreement reduces confidence in the exact "
+                "threat category."
+            )
 
         return recommendations
 
@@ -775,104 +856,352 @@ class InvestigationAgent:
 
     def _generate_verdict(
         self,
-        binary: Dict[str, Any],
-        threat_class: str,
-        severity: Dict[str, Any],
-        confidence: Dict[str, Any],
-        consistency: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        evidence: Dict[str, Any],
+        threat_profile: Dict[str, Any],
+        threat_intelligence: Dict[str, Any],
+    ) -> str:
 
-        prediction = str(
-            binary.get(
-                "prediction",
-                "Unknown",
+        threat_class = self._get_threat_class(
+            evidence,
+            threat_profile,
+        )
+
+        severity = self._get_severity(
+            threat_profile,
+        )
+
+        severity_level = severity.get(
+            "level",
+            "Unknown",
+        )
+
+        binary = evidence.get(
+            "binary_detection",
+            {},
+        )
+
+        consistency = evidence.get(
+            "model_consistency",
+            {},
+        )
+
+        evidence_strength = evidence.get(
+            "evidence_strength",
+            {},
+        )
+
+        if (
+            binary.get("prediction") == "Attack"
+            and not consistency.get(
+                "model_disagreement",
+                False,
             )
-        ).lower()
-
-        if prediction == "attack":
-            if threat_class not in [
-                "Unknown",
-                "Normal",
-            ]:
-                verdict = (
-                    f"Potential {threat_class} activity "
-                    "requires investigation."
-                )
-            else:
-                verdict = (
-                    "Potential malicious activity detected, "
-                    "but the exact threat category is uncertain."
-                )
-
-        elif prediction == "normal":
-            verdict = (
-                "No strong evidence of malicious activity was "
-                "identified by the binary detector."
-            )
-
-        else:
-            verdict = (
-                "The available evidence is insufficient for "
-                "a definitive investigation verdict."
-            )
-
-        if consistency.get(
-            "model_disagreement",
-            False,
+            and evidence_strength.get(
+                "level"
+            ) in [
+                "Medium",
+                "High",
+            ]
         ):
-            qualifier = (
-                " Classifier disagreement reduces confidence "
+
+            return (
+                f"Potential {threat_class} activity "
+                f"requires investigation."
+            )
+
+        if (
+            binary.get("prediction") == "Attack"
+            and consistency.get(
+                "model_disagreement",
+                False,
+            )
+        ):
+
+            return (
+                "Potential malicious activity was detected, "
+                "but the exact threat category is uncertain. "
+                "Classifier disagreement reduces confidence "
                 "in the exact attack category."
             )
-        else:
-            qualifier = ""
 
-        return {
-            "verdict": verdict + qualifier,
-            "threat_class": threat_class,
-            "severity": severity.get(
-                "level",
-                "Unknown",
-            ),
-            "confidence_level": confidence.get(
-                "level",
-                "Very Low",
-            ),
-            "confidence_score": confidence.get(
-                "score",
-                0,
-            ),
-        }
+        if (
+            binary.get("prediction") == "Attack"
+            and severity_level in [
+                "Medium",
+                "High",
+                "Critical",
+            ]
+        ):
+
+            return (
+                f"Potential {threat_class} activity "
+                f"requires further investigation."
+            )
+
+        if binary.get("prediction") == "Attack":
+
+            return (
+                "Potential malicious activity was detected, "
+                "but additional evidence is required."
+            )
+
+        return (
+            "No strong evidence of malicious activity was "
+            "identified by the current detection pipeline."
+        )
 
     # ------------------------------------------------------------------
     # Limitations
     # ------------------------------------------------------------------
 
-    def _limitations(self) -> List[str]:
+    def _limitations(
+        self,
+    ) -> List[str]:
 
         return [
             (
-                "The investigation uses flow-level evidence "
-                "derived from UNSW-NB15."
+                "The investigation agent operates on "
+                "flow-level network features and does not "
+                "have direct host, process, authentication, "
+                "or packet-payload telemetry."
             ),
             (
-                "DNS features are DNS-derived flow proxies, "
-                "not raw DNS packet-level features."
-            ),
-            (
-                "Isolation Forest identifies deviation from "
-                "learned normal traffic and does not prove maliciousness."
+                "Isolation Forest anomaly detection indicates "
+                "deviation from learned normal traffic and "
+                "does not by itself prove malicious activity."
             ),
             (
                 "SHAP and LIME describe model behavior and "
-                "should not be interpreted as causal explanations."
+                "feature contribution; they do not establish "
+                "causal relationships."
             ),
             (
                 "MITRE ATT&CK mappings are candidate mappings "
-                "and require corroborating telemetry."
+                "and require corroborating telemetry before "
+                "being treated as confirmed techniques."
             ),
             (
-                "Agent confidence is an evidence-strength indicator, "
-                "not an attack probability."
+                "Agent confidence represents evidence strength "
+                "and consistency, not attack probability."
             ),
         ]
+
+    # ------------------------------------------------------------------
+    # Main investigation function
+    # ------------------------------------------------------------------
+
+    def investigate(
+        self,
+        evidence: Dict[str, Any],
+        threat_profile: Dict[str, Any],
+        threat_intelligence: Dict[str, Any],
+    ) -> Dict[str, Any]:
+
+        threat_class = self._get_threat_class(
+            evidence,
+            threat_profile,
+        )
+
+        severity = self._get_severity(
+            threat_profile,
+        )
+
+        findings = self._generate_findings(
+            evidence,
+            threat_profile,
+            threat_intelligence,
+        )
+
+        reasoning = self._generate_reasoning(
+            evidence,
+            threat_profile,
+            threat_intelligence,
+        )
+
+        explainability = self._summarize_explainability(
+            evidence,
+        )
+
+        mitre_information = self._extract_mitre_information(
+            threat_intelligence,
+        )
+
+        confidence = self._calculate_agent_confidence(
+            evidence,
+            threat_profile,
+            threat_intelligence,
+        )
+
+        recommendations = self._generate_recommendations(
+            evidence,
+            threat_profile,
+            threat_intelligence,
+        )
+
+        verdict = self._generate_verdict(
+            evidence,
+            threat_profile,
+            threat_intelligence,
+        )
+
+        limitations = self._limitations()
+
+        result = {
+            "agent": {
+                "name": self.agent_name,
+                "version": self.version,
+                "type": "Evidence-grounded investigation agent",
+            },
+
+            "investigation_verdict": {
+                "verdict": verdict,
+                "threat_class": threat_class,
+                "severity": severity,
+                "confidence": confidence,
+            },
+
+            "threat_class": threat_class,
+
+            "severity": severity,
+
+            "agent_confidence": confidence,
+
+            # Keep confidence as a direct compatibility field
+            "confidence": confidence,
+
+            # Required by the investigation runner
+            "key_findings": findings,
+
+            # Keep findings as a direct compatibility field
+            "findings": findings,
+
+            "reasoning": reasoning,
+
+            "explainability": explainability,
+
+            "mitre": mitre_information,
+
+            "recommended_actions": recommendations,
+
+            "limitations": limitations,
+        }
+
+        return result
+
+
+# ----------------------------------------------------------------------
+# Synthetic test
+# ----------------------------------------------------------------------
+
+if __name__ == "__main__":
+
+    agent = InvestigationAgent()
+
+    synthetic_evidence = {
+        "binary_detection": {
+            "prediction": "Attack",
+            "attack_probability": 0.95,
+        },
+
+        "attack_classification": {
+            "random_forest": {
+                "predicted_class": "Exploits",
+                "confidence": 0.91,
+            },
+
+            "two_stream": {
+                "multiclass_prediction": "Exploits",
+                "multiclass_confidence": 0.88,
+            },
+        },
+
+        "anomaly_detection": {
+            "is_anomaly": True,
+            "anomaly_score": 0.25,
+        },
+
+        "model_consistency": {
+            "model_disagreement": False,
+        },
+
+        "evidence_strength": {
+            "level": "High",
+            "score": 90,
+        },
+
+        "explainability": {
+            "shap": {
+                "top_features": [
+                    "dns_response_activity",
+                    "protocol_distribution",
+                ]
+            },
+
+            "lime": {
+                "top_features": [
+                    "flow_duration",
+                    "query_rate",
+                ]
+            },
+        },
+    }
+
+    synthetic_profile = {
+        "threat_profile": {
+            "predicted_threat": "Exploits",
+        },
+
+        "severity_assessment": {
+            "severity_level": "High",
+            "severity_score": 85.0,
+        },
+    }
+
+    synthetic_intelligence = {
+        "mitre_mappings": [
+            {
+                "technique_id": "T1190",
+                "technique_name": (
+                    "Exploit Public-Facing Application"
+                ),
+            }
+        ],
+
+        "analyst_guidance": [
+            "Review affected services."
+        ],
+
+        "mapping_policy": (
+            "ATT&CK mappings are candidate mappings "
+            "based on flow-level evidence."
+        ),
+    }
+
+    result = agent.investigate(
+        evidence=synthetic_evidence,
+        threat_profile=synthetic_profile,
+        threat_intelligence=synthetic_intelligence,
+    )
+
+    print()
+    print("Threat class:")
+    print(result["threat_class"])
+
+    print()
+    print("Severity:")
+    print(result["severity"])
+
+    print()
+    print("Agent confidence:")
+    print(result["agent_confidence"])
+
+    print()
+    print("Verdict:")
+    print(result["investigation_verdict"]["verdict"])
+
+    print()
+    print("Key findings:")
+    print(len(result["key_findings"]))
+
+    print()
+    print("Investigation agent test completed successfully.")
