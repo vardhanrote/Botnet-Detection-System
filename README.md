@@ -1,812 +1,478 @@
-# CyberAgent: Agent-Assisted Network Threat Detection and Investigation using Machine Learning
+# CyberAgent: Agent-Assisted Network Threat Detection and Investigation Using Machine Learning
 
 ## Overview
 
-**CyberAgent** is an intelligent network security system designed to detect, classify, investigate, and explain suspicious network traffic using machine learning, deep learning, anomaly detection, and explainable AI. The project addresses a major limitation of traditional intrusion detection systems: detecting malicious traffic is only the first step, while security analysts also need to understand why traffic was flagged, what type of activity it may represent, how confident the models are, whether different detection methods agree, and what evidence supports the alert. CyberAgent therefore combines supervised machine learning, a custom two-stream deep learning architecture, unsupervised anomaly detection, SHAP/LIME explainability, and an evidence extraction engine into a unified investigation pipeline. The current implementation uses the **UNSW-NB15** network intrusion dataset and focuses on both binary attack detection and multiclass attack classification. The system is designed as a research-oriented foundation for a future SOC-style cybersecurity platform with threat intelligence, MITRE ATT&CK mapping, an AI investigation agent, security regression testing, attack replay, and automated incident reporting.
+CyberAgent is a research-oriented network security system designed to detect, classify, investigate, and explain suspicious network traffic using machine learning, deep learning, anomaly detection, and explainable AI.
+
+Traditional intrusion detection systems focus primarily on identifying malicious traffic. CyberAgent extends this process by examining the evidence behind predictions, comparing independent model outputs, identifying anomalous behavior, and communicating uncertainty to support security investigation.
+
+The project uses the **UNSW-NB15 network intrusion dataset** and includes two related development tracks:
+
+1. **Network detection and investigation:** Binary and multiclass classification, a two-stream deep-learning architecture, classical machine-learning baselines, anomaly detection, explainability, and structured evidence extraction.
+2. **Consensus-Stable Evidence Pipeline (CSEP):** An experimental research pipeline combining stability-selected features, anomaly-validated oversampling, explanation agreement, and uncertainty-aware verdict routing.
+
+The long-term objective is to develop a local, SOC-style investigation application that converts network alerts into structured, evidence-based investigations.
 
 ## Problem Statement
 
-Traditional network intrusion detection systems generally focus on answering a simple question: **"Is this traffic malicious?"** However, real-world cybersecurity investigation requires more information. A security analyst needs to know whether the traffic is anomalous, what type of attack it resembles, which features influenced the prediction, whether multiple models agree, and how strong the available evidence is. CyberAgent addresses this problem by combining multiple detection and investigation techniques into a single pipeline. Instead of relying on one model, the system creates an evidence-based view of suspicious traffic by combining binary classification, multiclass classification, anomaly detection, explainability, model consistency analysis, and evidence scoring.
+A malicious-traffic prediction alone is insufficient for a reliable security investigation. Analysts also need to understand the predicted attack category, the evidence influencing the prediction, the level of confidence, whether different analysis methods agree, and whether the event requires further investigation.
+
+CyberAgent addresses this problem through a modular pipeline that combines supervised classification, unsupervised anomaly detection, explainable AI, model-consistency analysis, and evidence-based investigation.
+
+The CSEP research track further investigates whether stable feature selection, quality-controlled oversampling, explanation agreement, and uncertainty-aware routing can improve the reliability of automated alert handling.
 
 ## Main Objectives
 
-The main objectives of CyberAgent are to: detect network traffic as normal or malicious; classify malicious traffic into multiple attack categories; compare classical machine-learning and deep-learning approaches; use network and DNS-derived flow features through separate feature streams; improve representation learning using CNN layers, feature fusion, multi-head attention, and BiLSTM; identify unusual traffic using unsupervised anomaly detection; explain model predictions using SHAP and LIME; generate local explanations for individual suspicious samples; compare predictions from different models; calculate an internal evidence-strength score; generate an analyst-friendly investigation summary; store investigation evidence in a structured JSON format; and provide a foundation for future threat profiling, threat intelligence, MITRE ATT&CK mapping, AI-assisted investigation, SOC visualization, and incident reporting.
+- Detect normal and potentially malicious network traffic.
+- Classify traffic into multiple attack categories.
+- Compare classical machine-learning and deep-learning models.
+- Investigate network-flow characteristics using engineered features.
+- Identify unusual traffic using unsupervised anomaly detection.
+- Explain model predictions using SHAP and LIME.
+- Compare model predictions and explanation rankings.
+- Evaluate confidence, calibration, and feature-selection stability.
+- Route uncertain alerts for analyst review.
+- Produce structured investigation evidence.
+- Develop a foundation for threat profiling, MITRE ATT&CK mapping, an AI investigation agent, and incident reporting.
 
 ## Key Features
 
-CyberAgent currently includes a complete machine-learning detection pipeline, feature engineering, Ridge-based feature selection, class balancing using SMOTE, a custom Two-Stream CNN architecture, Multi-Head Attention, BiLSTM-based representation learning, binary attack detection, multiclass attack classification, Random Forest and XGBoost baselines, a CNN-LSTM baseline, Isolation Forest anomaly detection, SHAP global explainability, LIME local explainability, fresh local SHAP explanations, fresh local LIME explanations, model consistency analysis, evidence-strength scoring, analyst-oriented evidence summaries, and persistent investigation results in JSON format.
+### Existing detection and investigation track
+
+The project includes implementations for:
+
+- UNSW-NB15 data preparation and feature engineering.
+- Binary attack detection and multiclass classification.
+- Random Forest and XGBoost baselines.
+- A custom two-stream CNN architecture with feature fusion, multi-head attention, and BiLSTM.
+- A CNN-LSTM comparison model.
+- Isolation Forest anomaly detection.
+- SHAP global and local explanations.
+- LIME local explanations.
+- Model-consistency analysis and evidence-strength scoring.
+- Structured investigation evidence saved as JSON.
+
+These components belong to the existing detection and investigation codebase. Their availability does not imply that every component has been revalidated in the current CSEP experiment.
+
+### CSEP research track
+
+CSEP is the current experimental focus. Its components are:
+
+| Component                            | Purpose                                                                                                                                                    |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stability-Selected Features (SSF)    | Identify features that remain useful across repeated training folds.                                                                                       |
+| Anomaly-Validated Oversampling (AVO) | Filter candidate synthetic minority samples using class locality and anomaly checks.                                                                       |
+| Consensus Attribution                | Compare SHAP and LIME feature rankings using top-k Jaccard similarity and Kendall's tau.                                                                   |
+| Agreement-Gated Verdict Routing      | Combine confidence, attribution agreement, anomaly score, and class plausibility to determine whether an alert should be automatically routed or reviewed. |
+| Evaluation Metrics                   | Measure classification quality, calibration, feature stability, and alert-routing behavior.                                                                |
+
+The verdict gate is a decision-support mechanism. An automatic routing label is not proof that an incident occurred, and explanation agreement does not establish that an explanation is correct.
 
 ## System Architecture
 
+The high-level architecture contains two connected development tracks.
+
+### Track A: Detection and Investigation
+
 ```text
-                         ┌──────────────────────────┐
-                         │       UNSW-NB15          │
-                         │  Training + Testing Data │
-                         └────────────┬─────────────┘
-                                      │
-                                      ▼
-                         ┌──────────────────────────┐
-                         │   Data Preprocessing     │
-                         │                          │
-                         │ • Cleaning               │
-                         │ • Encoding              │
-                         │ • Feature preparation   │
-                         │ • Train/Validation split│
-                         └────────────┬─────────────┘
-                                      │
-                                      ▼
-                         ┌──────────────────────────┐
-                         │  Feature Engineering     │
-                         │                          │
-                         │ • Network features      │
-                         │ • DNS-derived proxies   │
-                         └────────────┬─────────────┘
-                                      │
-                                      ▼
-                         ┌──────────────────────────┐
-                         │ Ridge Feature Selection  │
-                         └────────────┬─────────────┘
-                                      │
-                    ┌─────────────────┴─────────────────┐
-                    │                                   │
-                    ▼                                   ▼
-           ┌──────────────────┐               ┌──────────────────┐
-           │  Network Stream  │               │    DNS Stream    │
-           │    5 Features    │               │    5 Features    │
-           └────────┬─────────┘               └────────┬─────────┘
-                    │                                  │
-                    ▼                                  ▼
-           ┌──────────────────┐               ┌──────────────────┐
-           │ Conv1D + BN      │               │ Conv1D + BN      │
-           │ ReLU + Pooling   │               │ ReLU + Pooling   │
-           └────────┬─────────┘               └────────┬─────────┘
-                    │                                  │
-                    └────────────────┬─────────────────┘
-                                     ▼
-                            ┌──────────────────┐
-                            │ Feature Fusion   │
-                            └────────┬─────────┘
-                                     ▼
-                            ┌──────────────────┐
-                            │ Multi-Head       │
-                            │ Attention        │
-                            └────────┬─────────┘
-                                     ▼
-                            ┌──────────────────┐
-                            │ BiLSTM           │
-                            └────────┬─────────┘
-                                     │
-                         ┌───────────┴───────────┐
-                         ▼                       ▼
-                 ┌───────────────┐       ┌────────────────┐
-                 │ Binary Output │       │ Multiclass     │
-                 │ Normal/Attack │       │ 10 Classes     │
-                 └───────┬───────┘       └───────┬────────┘
-                         │                       │
-                         └───────────┬───────────┘
-                                     ▼
-                       ┌──────────────────────────┐
-                       │ Additional ML Analysis   │
-                       │                          │
-                       │ • Random Forest          │
-                       │ • XGBoost                │
-                       │ • CNN-LSTM               │
-                       │ • Isolation Forest       │
-                       └────────────┬─────────────┘
-                                    ▼
-                       ┌──────────────────────────┐
-                       │ Explainability Layer     │
-                       │                          │
-                       │ • SHAP                   │
-                       │ • LIME                   │
-                       │ • Local SHAP             │
-                       │ • Local LIME             │
-                       └────────────┬─────────────┘
-                                    ▼
-                       ┌──────────────────────────┐
-                       │ Evidence Extraction      │
-                       │ Engine                   │
-                       │                          │
-                       │ • Binary prediction     │
-                       │ • Attack classification │
-                       │ • Confidence             │
-                       │ • Anomaly detection     │
-                       │ • Model agreement       │
-                       │ • Evidence strength     │
-                       │ • Analyst summary       │
-                       └────────────┬─────────────┘
-                                    ▼
-                       ┌──────────────────────────┐
-                       │ Investigation Evidence  │
-                       │          JSON            │
-                       └────────────┬─────────────┘
-                                    ▼
-                 ┌────────────────────────────────────┐
-                 │        Future CyberAgent           │
-                 │                                    │
-                 │ • Threat Profiling                  │
-                 │ • Severity Engine                   │
-                 │ • Threat Intelligence               │
-                 │ • MITRE ATT&CK Mapping              │
-                 │ • AI Investigation Agent            │
-                 │ • Attack Replay                     │
-                 │ • Security Regression Testing       │
-                 │ • SOC Application                   │
-                 │ • Incident Reporting                │
-                 └────────────────────────────────────┘
+UNSW-NB15 Dataset
+        |
+        v
+Data Cleaning and Preprocessing
+        |
+        v
+Feature Engineering
+        |
+        v
+Feature Selection and Training Preparation
+        |
+        +---------------------------+
+        |                           |
+        v                           v
+Network Feature Stream       DNS-Derived Feature Stream
+        |                           |
+        v                           v
+Conv1D and Pooling           Conv1D and Pooling
+        |                           |
+        +-------------+-------------+
+                      |
+                      v
+                 Feature Fusion
+                      |
+                      v
+              Multi-Head Attention
+                      |
+                      v
+                    BiLSTM
+                      |
+             +--------+--------+
+             |                 |
+             v                 v
+       Binary Output     Multiclass Output
+             |                 |
+             +--------+--------+
+                      |
+                      v
+       Classical ML and Anomaly Signals
+                      |
+                      v
+              SHAP and LIME
+                      |
+                      v
+       Evidence Extraction and Scoring
+                      |
+                      v
+          Structured Investigation JSON
 ```
 
-## End-to-End Workflow
+### Track B: CSEP Research Pipeline
 
-The system begins with the UNSW-NB15 dataset containing network-flow information and attack labels. The raw data is inspected and prepared for machine-learning processing. Relevant categorical and numerical information is transformed into model-compatible representations. The dataset is divided into training, validation, and testing portions while keeping the test set untouched. Network and DNS-derived flow features are then engineered from the available flow-level information. Ridge-based feature selection is applied using the training data to identify the most useful features for each stream. Class imbalance in the training data is addressed using SMOTE. The resulting network and DNS feature groups are passed to the Two-Stream deep-learning architecture. Each stream independently learns feature representations through Conv1D layers before the learned representations are fused. Multi-Head Attention learns relationships between the fused representations, followed by BiLSTM processing and separate binary and multiclass prediction heads. Classical machine-learning models are also trained as baselines. Isolation Forest is trained only on normal training traffic to provide a second, unsupervised anomaly signal. SHAP and LIME are then used to understand model decisions. During investigation, the system combines predictions from the trained models, anomaly information, explainability information, model agreement, and evidence scoring into a structured investigation result. The final evidence is stored as JSON for further analysis or future integration with a SOC interface and AI investigation agent.
+```text
+UNSW-NB15 Training Data
+          |
+          v
+Training-Only Preprocessing
+          |
+          v
+Baseline Feature Selection
+          |
+          +-----------------------------+
+          |                             |
+          v                             v
+       SSF + SMOTE                   SSF + AVO
+          |                             |
+          +--------------+--------------+
+                         |
+                         v
+                Model Evaluation
+                         |
+                         v
+           Classification and Calibration
+                         |
+                         v
+            SHAP/LIME Attribution Agreement
+                         |
+                         v
+             Agreement-Gated Verdict Routing
+                         |
+                         v
+            Metrics and Experiment Reports
+```
+
+The CSEP experiment runner currently compares a Ridge-selection plus SMOTE baseline, SSF plus SMOTE, and SSF plus AVO. The integrated runner is still under research validation.
 
 ## Dataset
 
-CyberAgent currently uses the **UNSW-NB15** network intrusion dataset. The dataset contains network-flow records representing normal traffic and multiple categories of malicious activity. The project uses the provided training and testing datasets.
+CyberAgent uses the UNSW-NB15 network intrusion dataset.
 
-Training dataset shape:
+The supplied training and testing files have the following dimensions:
 
-```text
-175,341 rows × 45 columns
-```
+| Dataset  |    Rows | Columns |
+| -------- | ------: | ------: |
+| Training | 175,341 |      45 |
+| Testing  |  82,332 |      45 |
 
-Testing dataset shape:
+The dataset contains normal traffic and multiple attack categories.
 
-```text
-82,332 rows × 45 columns
-```
+| Attack category | Training samples |
+| --------------- | ---------------: |
+| Normal          |           56,000 |
+| Generic         |           40,000 |
+| Exploits        |           33,393 |
+| Fuzzers         |           18,184 |
+| DoS             |           12,264 |
+| Reconnaissance  |           10,491 |
+| Analysis        |            2,000 |
+| Backdoor        |            1,746 |
+| Shellcode       |            1,133 |
+| Worms           |              130 |
 
-The binary classification task contains:
+The dataset is highly imbalanced, particularly for rare attack categories. This makes per-class recall, macro-F1, and evaluation on rare attacks important in addition to overall accuracy.
 
-| Label  | Samples |
-| ------ | ------: |
-| Normal |  56,000 |
-| Attack | 119,341 |
-
-The multiclass classification task contains the following classes:
-
-| Attack Class   | Samples |
-| -------------- | ------: |
-| Normal         |  56,000 |
-| Generic        |  40,000 |
-| Exploits       |  33,393 |
-| Fuzzers        |  18,184 |
-| DoS            |  12,264 |
-| Reconnaissance |  10,491 |
-| Analysis       |   2,000 |
-| Backdoor       |   1,746 |
-| Shellcode      |   1,133 |
-| Worms          |     130 |
-
-The severe imbalance among minority classes is one of the challenges addressed by the project.
+The CSEP smoke experiment uses stratified subsets of 8,000 training rows and 3,000 test rows. These subsets are intended for debugging and preliminary comparisons, not final research claims.
 
 ## Feature Engineering
 
-CyberAgent separates the selected features into two streams.
+The existing two-stream track groups engineered features into two streams.
 
-### Network Features
+### Network features
 
-The current network stream contains:
+- `inter_arrival_time`
+- `protocol_distribution`
+- `packet_rate`
+- `flow_duration`
+- `packet_size`
 
-```text
-inter_arrival_time
-protocol_distribution
-packet_rate
-flow_duration
-packet_size
-```
+### DNS-derived flow features
 
-These features represent characteristics such as traffic timing, protocol behavior, packet frequency, duration, and packet-size information.
+- `query_type_distribution`
+- `dns_query_frequency`
+- `query_rate`
+- `dns_response_activity`
+- `query_length`
 
-### DNS-Derived Flow Features
+**Important limitation:** These DNS-related features are derived proxies calculated from available flow-level fields. The current feature-engineering approach does not establish that the system processes raw DNS packets or complete DNS transaction telemetry.
 
-The current DNS stream contains:
+The CSEP experiment runner separately processes categorical and numerical fields from the supplied dataset and encodes them for its classification experiments. Its smoke-test configuration produced 194 encoded features. These 194 features should not be confused with the two-stream architecture's selected feature groups.
 
-```text
-query_type_distribution
-dns_query_frequency
-query_rate
-dns_response_activity
-query_length
-```
+## Existing Two-Stream Deep-Learning Model
 
-These are **DNS-derived flow-level proxies** calculated from available network-flow information.
+The existing deep-learning architecture contains two independent feature branches.
 
-The current implementation does not claim to process raw DNS packets or complete DNS protocol-level telemetry.
+Each branch applies convolutional layers, batch normalization, activation functions, and pooling. The learned representations are fused and processed using multi-head attention, a residual connection, and BiLSTM layers before the output heads generate predictions.
 
-## Ridge Feature Selection
+The architecture is intended to support:
 
-Ridge-based feature selection is applied before the deep-learning stage. The purpose is to reduce unnecessary features and retain a compact set of features with useful predictive information. Feature selection is fitted using the training data rather than the untouched test set.
+- Binary classification: Normal versus Attack.
+- Multiclass classification: Ten traffic classes.
 
-The final selected network features are:
+The configured attention layer uses four heads, and the BiLSTM uses a hidden size of 64.
 
-```text
-1. inter_arrival_time
-2. protocol_distribution
-3. packet_rate
-4. flow_duration
-5. packet_size
-```
+Because UNSW-NB15 does not provide a clean chronological sequence of network sessions for this project, the BiLSTM should not be described as demonstrating genuine chronological traffic modeling without additional timestamped sequence data.
 
-The final selected DNS-derived features are:
+## Baseline Models and Previously Reported Results
 
-```text
-1. query_type_distribution
-2. dns_query_frequency
-3. query_rate
-4. dns_response_activity
-5. query_length
-```
-
-## Class Balancing
-
-The training data contains significant class imbalance, particularly for classes such as Worms, Shellcode, and Backdoor. SMOTE is applied to the training data to reduce this imbalance.
-
-The validation and test datasets remain untouched by SMOTE so that evaluation represents the original data distribution.
-
-After SMOTE, each training class contains approximately:
-
-```text
-50,400 samples
-```
-
-resulting in approximately:
-
-```text
-504,000 training samples
-```
-
-The validation set contains:
-
-```text
-17,535 samples
-```
-
-and the test set contains:
-
-```text
-82,332 samples
-```
-
-## Two-Stream Deep Learning Architecture
-
-The main deep-learning model is a custom Two-Stream architecture.
-
-The architecture contains two independent feature branches:
-
-```text
-Network Features
-       ↓
-Conv1D
-       ↓
-Batch Normalization
-       ↓
-ReLU
-       ↓
-Max Pooling
-       ↓
-Conv1D
-       ↓
-Batch Normalization
-       ↓
-ReLU
-```
-
-and:
-
-```text
-DNS Features
-       ↓
-Conv1D
-       ↓
-Batch Normalization
-       ↓
-ReLU
-       ↓
-Max Pooling
-       ↓
-Conv1D
-       ↓
-Batch Normalization
-       ↓
-ReLU
-```
-
-The two learned representations are then fused.
-
-The fused representation is processed by:
-
-```text
-Feature Fusion
-      ↓
-Multi-Head Attention
-      ↓
-Residual Connection
-      ↓
-BiLSTM
-      ↓
-Mean Pooling
-      ↓
-Fully Connected Layer
-      ↓
-Binary Head + Multiclass Head
-```
-
-The attention layer uses four attention heads and the BiLSTM uses a hidden size of 64.
-
-The model produces two primary outputs:
-
-1. Binary prediction: Normal vs Attack
-2. Multiclass prediction: one of the 10 traffic classes
-
-## Baseline Models
-
-To evaluate the usefulness of the proposed architecture, several baseline approaches are included.
+The existing project documentation reports the following results from earlier model evaluations. These are historical project results, separate from the new CSEP smoke experiment.
 
 ### Random Forest
 
-Random Forest provides a strong classical machine-learning baseline and is particularly useful for multiclass classification.
+Previously reported multiclass results:
 
-Current test results:
-
-```text
-Binary:
-Accuracy  : 59.17%
-Precision : 58.55%
-Recall    : 88.55%
-F1        : 70.49%
-
-Multiclass:
-Accuracy      : 63.71%
-Weighted F1   : 71.36%
-Precision     : 86.50%
-```
+- Accuracy: 63.71%
+- Weighted F1: 71.36%
+- Precision: 86.50%
 
 ### XGBoost
 
-XGBoost provides another tree-based baseline.
+Previously reported results:
 
-Current test results:
-
-```text
-Binary:
-Accuracy  : 59.09%
-Precision : 58.00%
-Recall    : 93.15%
-F1        : 71.49%
-
-Multiclass:
-Accuracy    : 52.21%
-Weighted F1 : 59.85%
-Precision   : 81.52%
-```
+- Binary accuracy: 59.09%
+- Binary recall: 93.15%
+- Binary F1: 71.49%
+- Multiclass accuracy: 52.21%
+- Multiclass weighted F1: 59.85%
 
 ### CNN-LSTM
 
-A CNN-LSTM baseline is also included to compare a simpler deep-learning architecture against the Two-Stream architecture.
+Previously reported multiclass results:
 
-Current multiclass results:
+- Accuracy: 58.05%
+- Weighted F1: 63.87%
 
-```text
-Accuracy    : 58.05%
-Weighted F1 : 63.87%
-```
+### Weighted Two-Stream Model
 
-## Two-Stream Model Results
+Previously reported binary results:
 
-The original Two-Stream model achieved the following test results.
+- Accuracy: 72.98%
+- Precision: 67.34%
+- Recall: 98.87%
+- F1: 80.12%
+- False-positive rate: 58.74%
+- False-negative rate: 1.13%
 
-Binary classification:
+### Isolation Forest
 
-```text
-Accuracy  : 70.98%
-Precision : 65.51%
-Recall    : 99.86%
-F1        : 79.12%
-FPR        : 64.40%
-FNR        : 0.14%
-```
+Previously reported results:
 
-The weighted Two-Stream version was also developed to address class imbalance through class-weighted learning.
+- Accuracy: 71.22%
+- Precision: 91.12%
+- Recall: 52.89%
+- F1: 66.93%
+- False-positive rate: 6.31%
+- False-negative rate: 47.11%
 
-Weighted Two-Stream test results:
+These metrics should be rechecked against their original experiment reports before being used in a final publication or presentation. Results from different experiments should not be compared as if they came from an identical split and evaluation protocol unless that has been verified.
 
-```text
-Accuracy  : 72.98%
-Precision : 67.34%
-Recall    : 98.87%
-F1        : 80.12%
-FPR        : 58.74%
-FNR        : 1.13%
-```
+## CSEP Smoke Experiment
 
-The weighted Two-Stream model is therefore used as the primary deep-learning binary detector.
+### Experimental configuration
 
-For multiclass classification, Random Forest currently performs better than the Two-Stream model on the available evaluation results, so the project does not artificially claim that the deep-learning model is superior for every task.
+The first integrated binary smoke experiment completed successfully.
 
-## Model Selection Strategy
+| Setting                          | Value                 |
+| -------------------------------- | --------------------- |
+| Dataset                          | UNSW-NB15             |
+| Target                           | Binary classification |
+| Training subset                  | 8,000 rows            |
+| Test subset                      | 3,000 rows            |
+| Encoded features                 | 194                   |
+| SSF folds                        | 2                     |
+| Selected features per experiment | 10                    |
 
-The project follows a practical model-selection approach instead of forcing one model to perform every task.
+The experiment compares:
 
-For binary detection:
+1. Ridge feature selection + SMOTE.
+2. Stability-Selected Features + SMOTE.
+3. Stability-Selected Features + Anomaly-Validated Oversampling.
 
-```text
-Primary:
-Weighted Two-Stream Model
+### Preliminary results
 
-Supporting:
-XGBoost
-Random Forest
-Isolation Forest
-```
+| Experiment    | Accuracy | Macro-F1 | Weighted F1 |    ECE | Brier score |
+| ------------- | -------: | -------: | ----------: | -----: | ----------: |
+| Ridge + SMOTE |   83.73% |   83.18% |      83.49% | 0.0787 |      0.2399 |
+| SSF + SMOTE   |   86.20% |   85.66% |      85.95% | 0.0435 |      0.1807 |
+| SSF + AVO     |   86.07% |   85.46% |      85.76% | 0.0489 |      0.1829 |
 
-For multiclass classification:
+Lower ECE and Brier scores generally indicate better probability calibration and probabilistic prediction quality, respectively.
 
-```text
-Primary:
-Random Forest
+In this smoke test, SSF + SMOTE achieved the highest macro-F1 and accuracy among the three configurations. SSF + AVO produced a slightly lower macro-F1 and used fewer training rows after resampling.
 
-Supporting:
-Two-Stream Model
-XGBoost
-CNN-LSTM
-```
+These results are **preliminary debugging results only**. The experiment used a small subset and two SSF folds. They do not establish final model performance or prove that CSEP improves generalization. The full experiments, methodological checks, and ablation studies remain necessary.
 
-This allows CyberAgent to use the strongest available model for each specific task while retaining multiple independent signals for investigation.
+### Runtime
 
-## Ensemble Experiment
+| Experiment    | Reported training time |
+| ------------- | ---------------------: |
+| Ridge + SMOTE |           1.68 seconds |
+| SSF + SMOTE   |         474.12 seconds |
+| SSF + AVO     |         347.00 seconds |
 
-Probability-level fusion was also investigated using Random Forest, XGBoost, and the Two-Stream model.
+The SSF procedure is computationally expensive because it repeatedly estimates feature importance across folds. Runtime is therefore an important practical consideration alongside predictive performance.
 
-The validation set produced a useful fusion configuration, but the same configuration did not generalize sufficiently to the untouched test set. Therefore, the ensemble is currently retained as an **experimental/ablation component rather than the primary production classifier**.
+### Output files
 
-This prevents the system from selecting a model only because it performs well on a validation set.
+The completed smoke experiment saved its outputs under `experiments/results/`:
 
-## Isolation Forest Anomaly Detection
+- `csep_experiment_metrics.json`
+- `csep_experiment_summary.csv`
+- `ssf_smote_feature_report.csv`
+- `ssf_avo_feature_report.csv`
+- `ssf_avo_oversampling_report.json`
 
-CyberAgent includes an unsupervised Isolation Forest module.
+These reports are currently local experiment artifacts. They are not yet the final research results.
 
-Unlike the supervised classifiers, Isolation Forest is trained only using normal training traffic.
+### Research evaluation plan
 
-Configuration:
+The next CSEP experiments should investigate:
 
-```text
-Trees          : 200
-Max Samples    : 10,000
-Random State   : 42
-Training Data  : Normal training traffic only
-Threshold      : 95th percentile of normal training anomaly scores
-```
+- Baseline versus SSF, AVO, and the combined configuration.
+- Ablations that isolate each component's contribution.
+- Macro-F1 and per-class recall.
+- Calibration using ECE, Brier score, and reliability analysis.
+- Feature-selection stability across random seeds and folds.
+- SHAP/LIME top-k ranking agreement.
+- Automatic-routing coverage and error rates.
+- The number of incorrect predictions routed for human review.
+- Generalization to held-out attack categories, using strict exclusion of those categories from training and all fitted preprocessing, feature selection, oversampling, calibration, and threshold selection.
 
-The resulting test performance was:
-
-```text
-Accuracy  : 71.22%
-Precision : 91.12%
-Recall    : 52.89%
-F1        : 66.93%
-FPR       : 6.31%
-FNR       : 47.11%
-```
-
-The anomaly detector provides an independent signal to the investigation layer.
-
-An anomaly does **not** automatically mean that the traffic is malicious. It means that the traffic differs from the normal distribution learned by the Isolation Forest.
+The final test set should remain untouched during model selection and tuning.
 
 ## Explainable AI
 
-CyberAgent uses two complementary explainability methods.
-
 ### SHAP
 
-SHAP is used for global and local model explanation.
+SHAP estimates feature contributions to model predictions and can support global and local interpretation.
 
-The current global SHAP analysis uses the Random Forest multiclass model and 1,000 randomly selected test samples.
+The earlier project documentation reports a global SHAP analysis using the Random Forest multiclass model and 1,000 randomly selected test samples.
 
-The global feature ranking is:
+Reported feature ranking:
 
-```text
-1. dns_response_activity
-2. protocol_distribution
-3. inter_arrival_time
-4. query_type_distribution
-5. query_length
-6. flow_duration
-7. packet_size
-8. query_rate
-9. dns_query_frequency
-10. packet_rate
-```
+1. `dns_response_activity`
+2. `protocol_distribution`
+3. `inter_arrival_time`
+4. `query_type_distribution`
+5. `query_length`
+6. `flow_duration`
+7. `packet_size`
+8. `query_rate`
+9. `dns_query_frequency`
+10. `packet_rate`
 
-The results indicate that several DNS-derived features have substantial influence on the Random Forest's multiclass decisions.
-
-SHAP values represent feature contributions to model predictions. They should not be interpreted as proof of causal relationships.
+These results should be verified against the saved explanation outputs before being reused in final claims.
 
 ### LIME
 
-LIME provides local explanations for individual predictions. It approximates the model locally around a selected sample and identifies features that contribute to that specific prediction.
+LIME provides a local approximation of a model around a selected sample to identify features influencing that prediction.
 
-The investigation layer also supports fresh local LIME explanations instead of relying only on previously stored explanations.
+### CSEP attribution consensus
 
-## Investigation Layer
+The CSEP consensus module compares SHAP and LIME feature rankings using:
 
-The investigation layer transforms raw model predictions into a more meaningful evidence package.
+- Top-k Jaccard similarity.
+- Kendall's tau.
+- Shared-feature counts.
+- A combined agreement score.
 
-For an individual network-flow sample, the investigation engine combines:
+Agreement indicates consistency between explanation rankings, not proof that the explanations are correct or that the model's prediction is true.
 
-```text
-Binary Detection
-        +
-Random Forest Classification
-        +
-Two-Stream Classification
-        +
-Isolation Forest
-        +
-Model Consistency
-        +
-Local SHAP
-        +
-Local LIME
-        +
-Evidence Strength
-        +
-Analyst Summary
-```
+## Anomaly Detection and Verdict Routing
 
-The result is stored in:
+Isolation Forest provides an independent anomaly signal by estimating how unusual a sample is relative to its learned reference distribution.
 
-```text
-results/investigation/evidence_extraction_results.json
-```
+An anomalous sample is not automatically malicious, and an ordinary-looking sample is not necessarily benign.
 
-## Evidence Extraction
+CSEP's verdict gate combines classifier confidence, attribution agreement, anomaly score, and class plausibility to route alerts. Its intended routes include automatic handling, analyst review, and possible novel-threat investigation.
 
-The evidence extraction engine currently performs the following operations:
+These are investigation-routing decisions, not ground-truth incident confirmations. Thresholds and routing performance must be validated before the mechanism can be described as production-ready.
 
-1. Loads network and DNS test features.
-2. Loads the Random Forest classifier.
-3. Loads the Two-Stream deep-learning model.
-4. Loads the Isolation Forest model.
-5. Initializes the local SHAP explainer.
-6. Initializes the local LIME explainer.
-7. Selects an individual test sample.
-8. Generates a binary attack prediction.
-9. Generates a Random Forest multiclass prediction.
-10. Generates a Two-Stream multiclass prediction.
-11. Calculates anomaly information.
-12. Compares model predictions.
-13. Calculates an evidence-strength score.
-14. Generates an analyst-readable summary.
-15. Saves the investigation evidence to JSON.
+## Investigation Evidence
 
-## Model Consistency
+The existing investigation track is designed to combine:
 
-CyberAgent compares the predictions of multiple supervised models.
+- Binary classification.
+- Multiclass predictions.
+- Anomaly information.
+- Model consistency.
+- Local SHAP and LIME explanations.
+- Internal evidence-strength scoring.
+- An analyst-readable summary.
 
-For example:
+The earlier project documentation identifies the output location as:
 
-```text
-Random Forest → Exploits
-Two-Stream    → Exploits
+`results/investigation/evidence_extraction_results.json`
 
-Result → Agreement
-```
-
-or:
-
-```text
-Random Forest → Normal
-Two-Stream    → Shellcode
-
-Result → Disagreement
-```
-
-Model disagreement is deliberately preserved rather than hidden.
-
-This is important because an investigation system should communicate uncertainty instead of presenting every prediction as a confirmed attack.
-
-## Evidence Strength
-
-CyberAgent calculates an internal evidence-strength score based on available signals such as detection confidence, model agreement, and anomaly information.
-
-The score is used to prioritize investigations.
-
-It is important to note that:
-
-> Evidence strength is an internal investigation-prioritization score and is not an attack probability.
-
-A low evidence score does not necessarily mean that an attack is impossible. It means that the available model evidence is not sufficiently consistent or strong.
-
-## Example Investigation
-
-A sample investigation can produce results such as:
-
-```text
-Binary result       : Attack
-Attack probability  : 0.7393
-Random Forest class : Normal
-RF confidence       : 0.1717
-Two-Stream class    : Shellcode
-Anomaly detected    : False
-Class agreement     : Disagreement
-Evidence strength   : Low (50/100)
-```
-
-The system does not simply label this sample as "Shellcode attack."
-
-Instead, the investigation engine recognizes that:
-
-```text
-Binary detector → Attack
-Random Forest   → Normal
-Two-Stream      → Shellcode
-Isolation Forest→ Not anomalous
-```
-
-Therefore, the evidence is inconsistent and should be treated cautiously.
-
-This is one of the central ideas behind CyberAgent: **detection should lead to investigation rather than automatically being treated as confirmation.**
+Evidence strength is an internal prioritization score, not a calibrated probability of attack. Disagreement between models should be preserved and communicated rather than hidden.
 
 ## Technology Stack
 
-### Programming Language
+| Area                     | Technologies                       |
+| ------------------------ | ---------------------------------- |
+| Programming              | Python                             |
+| Data processing          | NumPy, Pandas                      |
+| Machine learning         | scikit-learn, XGBoost              |
+| Class balancing          | imbalanced-learn                   |
+| Deep learning            | PyTorch                            |
+| Explainability           | SHAP, LIME                         |
+| Research experiments     | CSEP modules, JSON and CSV reports |
+| Development              | Visual Studio Code, Git, GitHub    |
+| Future application layer | Streamlit, FastAPI                 |
 
-```text
-Python
-```
-
-### Machine Learning
-
-```text
-scikit-learn
-XGBoost
-imbalanced-learn
-```
-
-### Deep Learning
-
-```text
-PyTorch
-```
-
-### Explainable AI
-
-```text
-SHAP
-LIME
-```
-
-### Data Processing
-
-```text
-NumPy
-Pandas
-```
-
-### Development
-
-```text
-Visual Studio Code
-Git
-GitHub
-Jupyter / Google Colab where required
-```
-
-### Future Application Layer
-
-```text
-Streamlit
-FastAPI
-```
-
-The current core project is CPU-compatible and does not require cloud infrastructure.
+The core project is designed to run locally and does not require paid cloud infrastructure.
 
 ## Repository Structure
 
 ```text
 Botnet-Detection-System/
-│
 ├── data/
 │   ├── raw/
-│   │   ├── UNSW_NB15_training-set.csv
-│   │   └── UNSW_NB15_testing-set.csv
-│   │
 │   └── processed/
-│       ├── final_binary_train.npy
-│       ├── final_binary_val.npy
-│       ├── final_binary_test.npy
-│       ├── final_multiclass_train.npy
-│       ├── final_multiclass_val.npy
-│       ├── final_multiclass_test.npy
-│       ├── final_network_train.npy
-│       ├── final_network_val.npy
-│       ├── final_network_test.npy
-│       ├── final_dns_train.npy
-│       ├── final_dns_val.npy
-│       ├── final_dns_test.npy
-│       ├── feature_metadata.json
-│       ├── network_ridge_ranking.csv
-│       └── dns_ridge_ranking.csv
-│
 ├── src/
-│   ├── config.py
-│   ├── data_loader.py
-│   ├── preprocessing.py
-│   ├── feature_selection.py
-│   ├── utils.py
-│   ├── inspect_dataset.py
-│   ├── run_preprocessing.py
-│   ├── prepare_final_data.py
-│   ├── train_two_stream.py
-│   ├── analyze_two_stream.py
-│   ├── train_two_stream_weighted.py
-│   ├── compare_two_stream_models.py
-│   ├── analyze_prediction_distribution.py
-│   ├── error_analysis_comparison.py
-│   ├── generate_baseline_probabilities.py
-│   ├── generate_validation_probabilities.py
-│   │
 │   ├── models/
-│   │   └── two_stream_model.py
-│   │
 │   ├── baselines/
-│   │   ├── evaluate.py
-│   │   ├── random_forest.py
-│   │   ├── xgboost_model.py
-│   │   ├── cnn_lstm.py
-│   │   └── compare_results.py
-│   │
 │   ├── ensemble/
-│   │   ├── probability_fusion.py
-│   │   ├── optimize_fusion.py
-│   │   └── evaluate_frozen_fusion.py
-│   │
 │   ├── anomaly/
-│   │   ├── isolation_forest.py
-│   │   └── analyze_anomalies.py
-│   │
 │   ├── explainability/
-│   │   ├── feature_names.py
-│   │   ├── shap_random_forest.py
-│   │   └── lime_random_forest.py
-│   │
-│   └── investigation/
-│       ├── evidence_extractor.py
-│       ├── run_evidence_extraction.py
-│       ├── local_shap.py
-│       └── local_lime.py
-│
+│   ├── investigation/
+│   └── features/
+├── csep/
+│   ├── __init__.py
+│   ├── ssf.py
+│   ├── avo.py
+│   ├── consensus_attribution.py
+│   ├── verdict_gate.py
+│   └── metrics.py
+├── experiments/
+│   ├── run_csep_experiments.py
+│   └── results/
 ├── models/
-│   ├── baselines/
-│   │   ├── random_forest_binary.pkl
-│   │   ├── random_forest_multiclass.pkl
-│   │   ├── xgboost_binary.pkl
-│   │   ├── xgboost_multiclass.pkl
-│   │   └── cnn_lstm_multiclass.pth
-│   │
-│   ├── two_stream_best.pth
-│   ├── two_stream_weighted_best.pth
-│   │
-│   └── anomaly/
-│       └── isolation_forest_normal.pkl
-│
 ├── results/
-│   ├── figures/
-│   ├── metrics/
-│   ├── predictions/
-│   ├── comparison/
-│   ├── ensemble/
-│   ├── anomaly/
-│   ├── explainability/
-│   └── investigation/
-│
-├── app/
 ├── tests/
 ├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
+
+The structure above is a high-level overview. Some folders contain existing model artifacts or generated files that may not be tracked in Git.
 
 ## Installation
 
@@ -817,15 +483,10 @@ git clone https://github.com/vardhanrote/Botnet-Detection-System.git
 cd Botnet-Detection-System
 ```
 
-Create a virtual environment:
+Create and activate a virtual environment:
 
 ```powershell
 python -m venv .venv
-```
-
-Activate the environment:
-
-```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
@@ -835,300 +496,192 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Verify Python:
+Check the Python installation:
 
 ```powershell
 python --version
 ```
 
-Verify PyTorch:
+Check PyTorch:
 
 ```powershell
 python -c "import torch; print(torch.__version__); print('CUDA:', torch.cuda.is_available())"
 ```
 
+Ensure the UNSW-NB15 training and testing files are present under `data/raw/` before running the dataset-dependent experiments.
+
 ## Running the Project
 
-### Inspect Dataset
+### Inspect the dataset
 
 ```powershell
 python -m src.inspect_dataset
 ```
 
-### Run Preprocessing
+### Run preprocessing
 
 ```powershell
 python -m src.run_preprocessing
 ```
 
-### Prepare Final Data
+### Prepare final model data
 
 ```powershell
 python -m src.prepare_final_data
 ```
 
-### Train the Original Two-Stream Model
+### Train the two-stream models
 
 ```powershell
 python -m src.train_two_stream
-```
-
-### Train the Weighted Two-Stream Model
-
-```powershell
 python -m src.train_two_stream_weighted
 ```
 
-### Train / Evaluate Baselines
-
-Random Forest, XGBoost, and CNN-LSTM implementations are available under:
-
-```text
-src/baselines/
-```
-
-### Run Isolation Forest
+### Run anomaly detection
 
 ```powershell
 python -m src.anomaly.isolation_forest
-```
-
-### Analyze Anomalies
-
-```powershell
 python -m src.anomaly.analyze_anomalies
 ```
 
-### Run Global SHAP
+### Run explainability
 
 ```powershell
 python -m src.explainability.shap_random_forest
-```
-
-### Run LIME
-
-```powershell
 python -m src.explainability.lime_random_forest
 ```
 
-### Run Evidence Extraction
+### Run investigation evidence extraction
 
 ```powershell
 python -m src.investigation.run_evidence_extraction
 ```
 
-The investigation results are saved to:
+The previously documented output path is:
 
-```text
-results/investigation/evidence_extraction_results.json
+`results/investigation/evidence_extraction_results.json`
+
+### Run CSEP smoke experiment
+
+From the project root, with the virtual environment activated:
+
+```powershell
+python experiments/run_csep_experiments.py --smoke --target binary --ssf-folds 2
 ```
 
-## Current Project Results
+This runs a smaller binary experiment for pipeline verification. Its metrics are preliminary and must not be used as final performance claims.
 
-The current implementation demonstrates that different models provide different strengths.
+### Run CSEP binary experiments
 
-Random Forest currently provides the strongest multiclass baseline with approximately:
-
-```text
-63.71% multiclass accuracy
-71.36% weighted F1
+```powershell
+python experiments/run_csep_experiments.py --target binary
 ```
 
-The weighted Two-Stream model currently provides strong binary detection performance with approximately:
+### Run CSEP multiclass experiments
 
-```text
-72.98% accuracy
-98.87% recall
-80.12% F1
+```powershell
+python experiments/run_csep_experiments.py --target multiclass
 ```
 
-Isolation Forest provides an independent anomaly signal with approximately:
-
-```text
-91.12% precision
-52.89% recall
-66.93% F1
-6.31% false-positive rate
-```
-
-These results demonstrate why CyberAgent uses a multi-model investigation architecture instead of relying on a single classifier.
-
-## Limitations
-
-### DNS Features
-
-The current DNS features are DNS-derived flow-level proxies. The system does not currently process complete raw DNS packet payloads or detailed DNS transaction logs.
-
-### Temporal Modeling
-
-UNSW-NB15 does not provide a clean timestamped sequence structure suitable for claiming true temporal traffic modeling. Therefore, the current BiLSTM should not be described as learning genuine chronological network sessions. Future versions can incorporate timestamped traffic windows to support real temporal modeling.
-
-### Anomaly Detection
-
-Isolation Forest detects deviation from the learned normal distribution. An anomaly is not automatically malicious.
-
-### Explainability
-
-SHAP explains feature contribution to model predictions but does not establish causality. LIME provides a local approximation of the model and should also not be treated as a definitive explanation of the real-world attack mechanism.
-
-### Evidence Strength
-
-Evidence strength is an internal prioritization mechanism. It is not a calibrated probability of attack.
-
-### Dataset Dependence
-
-The current models are trained and evaluated on UNSW-NB15. Real-world deployment would require additional datasets and validation against live or independently collected network traffic.
-
-### Cloud
-
-The current implementation intentionally avoids dependency on paid cloud infrastructure. The core system is designed to run locally.
-
-## Security and Privacy
-
-CyberAgent is designed for defensive cybersecurity research. The current attack replay and simulation roadmap is intended to operate at the dataset or controlled-simulation level rather than generating real-world malicious traffic. The system should only be tested against networks and systems for which the user has explicit authorization.
-
-Sensitive information such as API keys, credentials, private datasets, environment files, or personal information should never be committed to the repository.
+The full runs may be computationally expensive. Review the experiment configuration and data-handling methodology before treating their output as final research results.
 
 ## Current Development Status
 
-The current project has completed the core machine-learning and investigation foundation.
+### Implemented
 
-### Completed
+- UNSW-NB15 data preparation and existing preprocessing modules.
+- Existing two-stream deep-learning and baseline model code.
+- Existing anomaly detection and explainability modules.
+- Existing investigation and evidence-extraction code.
+- CSEP feature-selection, oversampling, consensus, verdict-gating, and metric modules.
+- CSEP experiment runner.
+- Supporting tests for the CSEP modules.
+- Successful binary smoke experiment with three compared configurations.
+- Saved preliminary metrics and feature/oversampling reports.
 
-```text
-✓ UNSW-NB15 dataset preparation
-✓ Dataset inspection
-✓ Feature engineering
-✓ Network feature stream
-✓ DNS-derived feature stream
-✓ Ridge feature selection
-✓ Training/validation/test separation
-✓ SMOTE-based training balancing
-✓ Two-Stream CNN architecture
-✓ Multi-Head Attention
-✓ BiLSTM
-✓ Binary detection
-✓ Multiclass classification
-✓ Random Forest baseline
-✓ XGBoost baseline
-✓ CNN-LSTM baseline
-✓ Model comparison
-✓ Ensemble experiment
-✓ Isolation Forest
-✓ SHAP global analysis
-✓ LIME local analysis
-✓ Local SHAP
-✓ Local LIME
-✓ Evidence extraction engine
-✓ Model consistency analysis
-✓ Evidence strength scoring
-✓ Analyst-oriented investigation summary
-✓ JSON investigation output
-```
+### In progress
 
-## Future Roadmap
+- Verification of the CSEP experimental methodology.
+- Full-data binary and multiclass experiments.
+- Ablation studies and feature-stability analysis.
+- Calibration and alert-routing evaluation.
+- Rare-class and held-out attack-category generalization.
+- Integration and validation of the research pipeline with the complete investigation workflow.
 
-The next stage of CyberAgent will extend the current evidence extraction engine into a complete cybersecurity investigation platform.
+### Planned
 
-### Threat Profiling
+- A complete investigator-facing application.
+- Threat profiles and a severity framework.
+- A local threat-intelligence knowledge base.
+- Evidence-grounded MITRE ATT&CK mapping.
+- An AI-assisted investigation agent.
+- Dataset-level attack replay.
+- Security regression testing.
+- Structured incident-report generation.
+- End-to-end application tests and a final demonstration.
 
-Create structured threat profiles based on detected attack classes, model evidence, anomaly information, and feature behavior.
+## Limitations
 
-### Severity Engine
+### Dataset dependence
 
-Develop a more detailed severity framework that considers detection confidence, attack category, anomaly level, model agreement, and other investigation signals.
+The current experiments use UNSW-NB15. Additional datasets and independent validation are needed before making claims about real-world deployment.
 
-### Threat Intelligence
+### DNS-derived features
 
-Build a local threat-intelligence knowledge base that can associate detected behaviors with known indicators, attack patterns, and defensive information.
+The DNS-related features are flow-derived proxies and should not be represented as complete raw DNS telemetry.
 
-### MITRE ATT&CK Mapping
+### Temporal modeling
 
-Map detected attack categories and behaviors to relevant MITRE ATT&CK techniques where sufficient evidence exists.
+The current dataset does not establish a clean chronological sequence of network sessions for this project. Genuine temporal modeling claims require appropriate timestamped sequence data.
 
-### AI Investigation Agent
+### Anomaly detection
 
-Develop the CyberAgent investigation layer so that an analyst can provide a suspicious event and receive a structured investigation containing:
+Anomaly scores represent deviation from a learned reference distribution, not a definitive maliciousness judgment.
 
-```text
-Detection
-↓
-Classification
-↓
-Evidence
-↓
-Explanation
-↓
-Threat Profile
-↓
-MITRE Mapping
-↓
-Recommended Investigation Steps
-↓
-Final Assessment
-```
+### Explainability
 
-The agent should use the available evidence rather than generating unsupported conclusions.
+SHAP and LIME provide model-oriented explanations, not causal proof of an attack mechanism.
 
-### Attack Replay
+### Synthetic oversampling
 
-Implement dataset-level attack replay so previously observed suspicious samples can be replayed through the detection and investigation pipeline.
+Synthetic examples can introduce artifacts or distort class boundaries. AVO requires further validation to establish whether its filtering improves generalization.
 
-### Security Regression Testing
+### Verdict routing
 
-Create a regression-testing framework to ensure that future model or rule changes do not silently reduce detection performance.
+Automatic routing thresholds must be calibrated and evaluated on appropriate validation data. Automatic handling must not be presented as confirmed incident detection.
 
-### SOC Application
+### Research results
 
-Build a Streamlit-based SOC interface for:
+The CSEP smoke-test results use a reduced dataset and a small number of SSF folds. Full-data experiments, ablations, and leakage checks are required before drawing final conclusions.
 
-```text
-Alerts
-Investigations
-Model Predictions
-Anomaly Scores
-SHAP Explanations
-LIME Explanations
-Threat Profiles
-MITRE ATT&CK
-Evidence
-Incident Reports
-```
+### Cloud and security
 
-### Incident Reporting
+The current implementation is designed for local execution without a dependency on paid cloud infrastructure. Testing should remain within datasets, controlled simulations, and networks for which explicit authorization exists.
 
-Generate structured incident reports containing:
+Sensitive information such as API keys, credentials, private datasets, and environment files must not be committed to the repository.
 
-```text
-Incident Summary
-Detection Details
-Predicted Attack Class
-Model Confidence
-Anomaly Information
-Feature Evidence
-Model Agreement
-Threat Profile
-MITRE Mapping
-Recommended Actions
-Investigation Conclusion
-```
+## Research Direction
 
-## Research Contribution
+CyberAgent aims to move beyond a simple detection-and-classification pipeline toward evidence-based investigation.
 
-The main contribution of CyberAgent is not simply another network classifier. The project combines **detection and investigation** into one workflow. Instead of treating a machine-learning prediction as the final answer, CyberAgent combines multiple supervised models, unsupervised anomaly detection, explainability, model-consistency analysis, and evidence scoring to produce a more transparent investigation result. The architecture therefore moves from a traditional "detect and classify" approach toward an "detect, explain, compare, investigate, and report" approach.
+The CSEP research question is:
+
+> Does a stability- and consensus-aware investigation pipeline route uncertain network alerts more reliably than a conventional detector, without causing an unacceptable increase in false alarms or missed attacks?
+
+The experiments will evaluate predictive performance, calibration, feature stability, explanation agreement, and routing behavior. The results must determine which components provide measurable benefits and which introduce additional cost or limitations.
+
+The project does not claim that CSEP is novel or production-ready solely because the modules have been implemented. Those claims require further comparative evaluation and literature review.
 
 ## Conclusion
 
-CyberAgent provides a modular foundation for intelligent network-threat detection and investigation. The current system combines the UNSW-NB15 dataset, engineered network and DNS-derived flow features, Ridge-based feature selection, SMOTE-based class balancing, a Two-Stream CNN architecture, Multi-Head Attention, BiLSTM representation learning, Random Forest and XGBoost baselines, Isolation Forest anomaly detection, SHAP, LIME, local explanations, model consistency analysis, and evidence extraction. The current implementation demonstrates that no single model provides the complete picture: the deep-learning detector can provide strong binary detection, Random Forest provides stronger multiclass performance, and Isolation Forest contributes an independent anomaly signal. CyberAgent therefore treats model outputs as pieces of evidence that should be combined and investigated rather than blindly accepted. The project is designed to evolve into a complete AI-assisted SOC investigation platform incorporating threat profiling, threat intelligence, MITRE ATT&CK mapping, security regression testing, controlled attack replay, an AI investigation agent, SOC visualization, and automated incident reporting.
+CyberAgent combines network-threat detection, multiclass classification, anomaly detection, explainable AI, and evidence extraction with a developing research pipeline for more reliable alert investigation.
 
-## Project
+The existing two-stream and classical-model implementations provide the detection foundation. CSEP adds stability-selected features, anomaly-validated oversampling, explanation-ranking agreement, and uncertainty-aware verdict routing.
 
-**CyberAgent: Agent-Assisted Network Threat Detection and Investigation using Machine Learning**
+The first integrated CSEP binary smoke experiment has completed and produced preliminary results. The next priorities are to validate the experimental methodology, conduct full-data comparisons and ablations, measure rare-class performance, and integrate the validated research pipeline into the investigator-facing application.
 
-**Repository:** `vardhanrote/Botnet-Detection-System`
-
-**Primary Dataset:** UNSW-NB15
-
-**Development Environment:** Python + PyTorch + scikit-learn + XGBoost + SHAP + LIME + VS Code
-
-**Project Focus:** Network Threat Detection, Machine Learning, Deep Learning, Anomaly Detection, Explainable AI, and AI-Assisted Cybersecurity Investigation
+**Project:** CyberAgent — Agent-Assisted Network Threat Detection and Investigation Using Machine Learning  
+**Repository:** [vardhanrote/Botnet-Detection-System](https://github.com/vardhanrote/Botnet-Detection-System)  
+**Primary dataset:** UNSW-NB15  
+**Development environment:** Python, PyTorch, scikit-learn, XGBoost, SHAP, LIME, and Visual Studio Code  
+**Research focus:** Network threat detection, anomaly detection, explainable AI, feature stability, and AI-assisted cybersecurity investigation
